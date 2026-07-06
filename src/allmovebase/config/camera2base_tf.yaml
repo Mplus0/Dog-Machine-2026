@@ -1,0 +1,16 @@
+# 相机静态外参记录
+#
+# 当前主链路实际由 launch/camera2base_tf.launch 发布 base_link -> camera_link。
+# 本文件用于记录默认外参，便于实机标定后同步维护。
+# 目前 launch 默认值与本文件一致；如需临时调参，可在 roslaunch 时覆盖参数。
+#
+# 2026-05-30 D435i 地面倾角标定：
+# - 第一次趴下数据不参与计算。
+# - 后五次正常站立 pitch_about_optical_x_deg 均值：-18.8282205 deg。
+# - 开阔区域三次 roll 接近 0，因此这里只写 pitch 补偿。
+
+camera_to_base_link_transform:
+  parent_frame: "base_link"
+  child_frame: "camera_link"
+  translation: [0.2, 0.0, 0.0]  # [x, y, z]，单位 m
+  rotation: [-0.1635689211, 0.0, 0.0, 0.9865319093]  # [x, y, z, w]，pitch -18.8282205 deg

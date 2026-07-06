@@ -1,0 +1,157 @@
+<launch>
+  <!-- Top-level hardcoded motion task: motion bridge + fixed cmd_vel sequence + persistent Docker meter inspection. -->
+  <arg name="start_motion_bridge" default="true"/>
+  <arg name="start_camera" default="true"/>
+  <arg name="run_meter_inspection" default="true"/>
+  <arg name="run_meter_audio" default="true"/>
+  <arg name="host_workspace" default="$(find dog_motion)"/>
+  <arg name="docker_command" default="docker"/>
+  <arg name="model_in_container" default="/workspace/models/yuyin.engine"/>
+  <arg name="meter_timeout" default="45.0"/>
+  <arg name="meter_ready_timeout" default="120.0"/>
+  <arg name="inspection_pitch_value" default="-6553"/>
+  <arg name="navigation_pitch_value" default="0"/>
+  <arg name="view_pose_step_sleep" default="0.5"/>
+  <arg name="view_pose_pitch_repeat_count" default="3"/>
+  <arg name="ros2qnx_debug" default="false"/>
+  <arg name="standing_basic_states" default="6,9"/>
+  <arg name="lie_basic_states" default="1"/>
+  <arg name="spot_basic_states" default="6,9"/>
+  <arg name="move_basic_states" default="6,9"/>
+  <arg name="mode_switch_timeout" default="3.0"/>
+  <arg name="mode_switch_retry_count" default="3"/>
+
+  <!-- Motion host and fixed-route distance parameters. Tune distances on the real robot. -->
+  <arg name="prepare_motion_host" default="true"/>
+  <arg name="motion_prepare_command" default="prepare_hardcoded_motion"/>
+  <arg name="motion_cmd_wait_timeout" default="5.0"/>
+  <arg name="motion_prepare_wait" default="1.0"/>
+  <arg name="task_budget_enable" default="false"/>
+  <arg name="task_budget_total" default="300.0"/>
+  <arg name="task_budget_reserve" default="5.0"/>
+  <arg name="min_motion_segment_remaining" default="5.0"/>
+  <arg name="min_inspection_remaining" default="12.0"/>
+  <arg name="inspection_view_command" default="inspection_view_pose"/>
+  <arg name="navigation_view_command" default="navigation_view_pose"/>
+  <arg name="cmd_vel_topic" default="/cmd_vel"/>
+  <arg name="require_cmd_vel_subscriber" default="true"/>
+  <arg name="cmd_vel_wait_timeout" default="8.0"/>
+  <arg name="cmd_vel_publish_hz" default="10.0"/>
+  <arg name="linear_speed" default="0.5"/>
+  <arg name="turn_speed" default="0.5"/>
+  <arg name="turn_angle_deg" default="90.0"/>
+  <arg name="turn_duration_scale" default="1.5"/>
+  <arg name="closed_loop_motion" default="false"/>
+  <arg name="closed_loop_straight" default="true"/>
+  <arg name="closed_loop_turn" default="true"/>
+  <arg name="closed_loop_require_feedback" default="false"/>
+  <arg name="closed_loop_odom_topic" default="/leg_odom2"/>
+  <arg name="closed_loop_odom_timeout" default="1.0"/>
+  <arg name="closed_loop_feedback_wait_timeout" default="5.0"/>
+  <arg name="closed_loop_distance_tolerance" default="0.05"/>
+  <arg name="closed_loop_turn_tolerance_deg" default="4.0"/>
+  <arg name="closed_loop_max_time_scale" default="2.5"/>
+  <arg name="closed_loop_max_time_margin" default="1.0"/>
+  <arg name="closed_loop_min_speed_ratio" default="0.35"/>
+  <arg name="closed_loop_slowdown_distance" default="0.25"/>
+  <arg name="closed_loop_slowdown_angle_deg" default="25.0"/>
+  <arg name="settle_after_motion" default="0.2"/>
+  <arg name="inspect_pose_settle" default="1.0"/>
+  <arg name="post_inspection_hold" default="4.0"/>
+  <arg name="initial_turn_to_y_pos" default="none"/>
+  <arg name="obs_end_to_rec_pose_1_distance" default="1.25"/>
+  <arg name="rec_pose_1_to_rec_pose_2_distance" default="2.5"/>
+  <arg name="half_loop_leg_1_distance" default="0.45"/>
+  <arg name="half_loop_leg_2_distance" default="2.0"/>
+  <arg name="half_loop_leg_3_distance" default="1.0"/>
+  <arg name="rec_pose_4_to_rec_pose_3_distance" default="2.5"/>
+  <arg name="rec_pose_1_inspect_turn" default="right"/>
+  <arg name="rec_pose_2_inspect_turn" default="right"/>
+  <arg name="rec_pose_4_inspect_turn" default="right"/>
+  <arg name="rec_pose_3_inspect_turn" default="right"/>
+
+  <group if="$(arg start_motion_bridge)">
+    <include file="$(find message_transformer)/launch/message_transformer.launch">
+      <arg name="inspection_pitch_value" value="$(arg inspection_pitch_value)"/>
+      <arg name="navigation_pitch_value" value="$(arg navigation_pitch_value)"/>
+      <arg name="view_pose_step_sleep" value="$(arg view_pose_step_sleep)"/>
+      <arg name="view_pose_pitch_repeat_count" value="$(arg view_pose_pitch_repeat_count)"/>
+      <arg name="ros2qnx_debug" value="$(arg ros2qnx_debug)"/>
+      <arg name="standing_basic_states" value="$(arg standing_basic_states)"/>
+      <arg name="lie_basic_states" value="$(arg lie_basic_states)"/>
+      <arg name="spot_basic_states" value="$(arg spot_basic_states)"/>
+      <arg name="move_basic_states" value="$(arg move_basic_states)"/>
+      <arg name="mode_switch_timeout" value="$(arg mode_switch_timeout)"/>
+      <arg name="mode_switch_retry_count" value="$(arg mode_switch_retry_count)"/>
+    </include>
+  </group>
+
+  <group if="$(arg start_camera)">
+    <include file="$(find allmovebase)/launch/camera_meter_only.launch"/>
+  </group>
+
+  <group if="$(arg run_meter_inspection)">
+    <include file="$(find dog_motion)/launch/meter_reader_docker_persistent.launch">
+      <arg name="start_camera" value="false"/>
+      <arg name="run_audio" value="$(arg run_meter_audio)"/>
+      <arg name="host_workspace" value="$(arg host_workspace)"/>
+      <arg name="docker_command" value="$(arg docker_command)"/>
+      <arg name="model_in_container" value="$(arg model_in_container)"/>
+      <arg name="warmup_frames" value="15"/>
+      <arg name="sample_count" value="5"/>
+    </include>
+  </group>
+
+  <node pkg="allmovebase" type="hardcoded_motion.py" name="hardcoded_motion" output="screen">
+    <param name="enable_meter_inspection" value="$(arg run_meter_inspection)"/>
+    <param name="meter_timeout" value="$(arg meter_timeout)"/>
+    <param name="meter_ready_timeout" value="$(arg meter_ready_timeout)"/>
+    <param name="prepare_motion_host" value="$(arg prepare_motion_host)"/>
+    <param name="motion_prepare_command" value="$(arg motion_prepare_command)"/>
+    <param name="motion_cmd_wait_timeout" value="$(arg motion_cmd_wait_timeout)"/>
+    <param name="motion_prepare_wait" value="$(arg motion_prepare_wait)"/>
+    <param name="task_budget_enable" value="$(arg task_budget_enable)"/>
+    <param name="task_budget_total" value="$(arg task_budget_total)"/>
+    <param name="task_budget_reserve" value="$(arg task_budget_reserve)"/>
+    <param name="min_motion_segment_remaining" value="$(arg min_motion_segment_remaining)"/>
+    <param name="min_inspection_remaining" value="$(arg min_inspection_remaining)"/>
+    <param name="inspection_view_command" value="$(arg inspection_view_command)"/>
+    <param name="navigation_view_command" value="$(arg navigation_view_command)"/>
+    <param name="cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
+    <param name="require_cmd_vel_subscriber" value="$(arg require_cmd_vel_subscriber)"/>
+    <param name="cmd_vel_wait_timeout" value="$(arg cmd_vel_wait_timeout)"/>
+    <param name="cmd_vel_publish_hz" value="$(arg cmd_vel_publish_hz)"/>
+    <param name="linear_speed" value="$(arg linear_speed)"/>
+    <param name="turn_speed" value="$(arg turn_speed)"/>
+    <param name="turn_angle_deg" value="$(arg turn_angle_deg)"/>
+    <param name="turn_duration_scale" value="$(arg turn_duration_scale)"/>
+    <param name="closed_loop_motion" value="$(arg closed_loop_motion)"/>
+    <param name="closed_loop_straight" value="$(arg closed_loop_straight)"/>
+    <param name="closed_loop_turn" value="$(arg closed_loop_turn)"/>
+    <param name="closed_loop_require_feedback" value="$(arg closed_loop_require_feedback)"/>
+    <param name="closed_loop_odom_topic" value="$(arg closed_loop_odom_topic)"/>
+    <param name="closed_loop_odom_timeout" value="$(arg closed_loop_odom_timeout)"/>
+    <param name="closed_loop_feedback_wait_timeout" value="$(arg closed_loop_feedback_wait_timeout)"/>
+    <param name="closed_loop_distance_tolerance" value="$(arg closed_loop_distance_tolerance)"/>
+    <param name="closed_loop_turn_tolerance_deg" value="$(arg closed_loop_turn_tolerance_deg)"/>
+    <param name="closed_loop_max_time_scale" value="$(arg closed_loop_max_time_scale)"/>
+    <param name="closed_loop_max_time_margin" value="$(arg closed_loop_max_time_margin)"/>
+    <param name="closed_loop_min_speed_ratio" value="$(arg closed_loop_min_speed_ratio)"/>
+    <param name="closed_loop_slowdown_distance" value="$(arg closed_loop_slowdown_distance)"/>
+    <param name="closed_loop_slowdown_angle_deg" value="$(arg closed_loop_slowdown_angle_deg)"/>
+    <param name="settle_after_motion" value="$(arg settle_after_motion)"/>
+    <param name="inspect_pose_settle" value="$(arg inspect_pose_settle)"/>
+    <param name="post_inspection_hold" value="$(arg post_inspection_hold)"/>
+    <param name="initial_turn_to_y_pos" value="$(arg initial_turn_to_y_pos)"/>
+    <param name="obs_end_to_rec_pose_1_distance" value="$(arg obs_end_to_rec_pose_1_distance)"/>
+    <param name="rec_pose_1_to_rec_pose_2_distance" value="$(arg rec_pose_1_to_rec_pose_2_distance)"/>
+    <param name="half_loop_leg_1_distance" value="$(arg half_loop_leg_1_distance)"/>
+    <param name="half_loop_leg_2_distance" value="$(arg half_loop_leg_2_distance)"/>
+    <param name="half_loop_leg_3_distance" value="$(arg half_loop_leg_3_distance)"/>
+    <param name="rec_pose_4_to_rec_pose_3_distance" value="$(arg rec_pose_4_to_rec_pose_3_distance)"/>
+    <param name="rec_pose_1_inspect_turn" value="$(arg rec_pose_1_inspect_turn)"/>
+    <param name="rec_pose_2_inspect_turn" value="$(arg rec_pose_2_inspect_turn)"/>
+    <param name="rec_pose_4_inspect_turn" value="$(arg rec_pose_4_inspect_turn)"/>
+    <param name="rec_pose_3_inspect_turn" value="$(arg rec_pose_3_inspect_turn)"/>
+  </node>
+</launch>

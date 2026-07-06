@@ -1,0 +1,13 @@
+# pointcloud_to_laserscan.yaml
+target_frame: camera_link # 转换后的LaserScan消息的坐标系。建议使用一个与机器人本体更紧密相关的坐标系，例如 camera_link 或 base_link。
+transform_tolerance: 0.01 # TF转换的容忍时间（秒），保持默认值即可
+min_height: 0.1 # 过滤掉地面，您可以根据机器人底盘高度来调整
+max_height: 1.5 # 过滤掉天花板和顶部物体，您可以根据机器人高度来调整
+angle_min: -2.0 # LaserScan的最小角度（弧度），覆盖前方宽广区域
+angle_max: 2.0 # LaserScan的最大角度（弧度）
+angle_increment: 0.0087 # 角度增量，影响扫描分辨率
+scan_time: 0.0333 # 扫描时间，与相机帧率相关
+range_min: 0.4 # LaserScan的最小有效距离，避免看到机器人自身
+range_max: 3.0 # LaserScan的最大有效距离，按D435i 3m内较可靠范围设置
+use_inf: true # 当超出max_range时，是否使用无穷大表示
+inf_epsilon: 1.0 # 距离无穷大时的过滤阈值

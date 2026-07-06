@@ -1,0 +1,59 @@
+TebLocalPlannerROS:
+###
+# 允许规划器优化Y方向的速度，不限于只沿X轴移动
+  y_vel_mode: true
+  # 允许规划器在必要时向后移动
+  forward_driving: false
+##
+# 在Rviz中显示TEB规划的轨迹
+  # publish_feedback: true
+   # Robot
+  max_vel_x: 1.0
+  max_vel_x_backwards: 0.4
+  max_vel_y: 1.0
+  max_vel_trans: 2
+  max_vel_theta: 1.5
+  acc_lim_x: 0.9
+  acc_lim_y: 0.9
+  acc_lim_theta: 1.8
+  min_turning_radius: 0.0
+  wheelbase: 0.0  # only for cmd_angle_instead_rotvel enabled car-like robot  
+  cmd_angle_instead_rotvel: false
+  is_footprint_dynamic: false
+  use_proportional_saturation: true
+  transform_tolerance: 0.3
+  footprint_model:
+    type: polygon
+    vertices: [[-0.27, -0.17], [-0.27, 0.17], [0.27, 0.17], [0.27, -0.17]]
+
+  # GoalTolerance
+  xy_goal_tolerance: 0.05 # 0.2
+  yaw_goal_tolerance: 0.08 # 0.2
+  free_goal_vel: false
+  trans_stopped_vel: 0.05
+  theta_stopped_vel: 0.05
+  complete_global_plan: false
+
+  # 优化器配置 (Optimizer Configuration)
+  # 轨迹优化次数
+  optimization_activate: true
+  optimization_iterations: 25
+  weight_optimaltime: 30
+  weight_max_vel_x: 1.4
+  # weight_max_vel_x: 2
+  # 规划器配置 (Planner Configuration)
+  holonomic_robot: true     # 启用全向模式，这是全向机器人最关键的参数
+  trajectory_point_distance: 0.1 # 轨迹点之间的距离
+  dt_ref: 0.20              # 轨迹点之间的时间间隔参考
+  dt_hysteresis: 0.01       # 时间间隔的滞后
+
+  # 避障配置 (Obstacle Configuration)
+  obstacle_cost_scale: 1.0    # 障碍物成本权重
+  inflation_dist: 0.2         # 障碍物膨胀距离
+  include_costmap_obstacles: true
+  min_obstacle_dist: 0.2      # 机器人与障碍物之间的最小安全距离
+
+  # 动态障碍物配置
+  include_dynamic_obstacles: false # 如果没有动态障碍物，设为false可以提高效率
+  
+  teb_autosize: true          # 根据机器人速度自动调整轨迹长度

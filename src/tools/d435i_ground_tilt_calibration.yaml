@@ -1,0 +1,279 @@
+latest: &id001
+  stamp: '2026-05-30T13:59:18.874466+00:00'
+  note: ros_check
+  backend: ros
+  source:
+    depth_topic: /camera/depth/image_rect_raw
+    camera_info_topic: /camera/depth/camera_info
+    serial: null
+    width: null
+    height: null
+    fps: null
+  roi_fraction:
+    left: 0.15
+    right: 0.85
+    top: 0.45
+    bottom: 0.95
+  roi_pixels:
+    left: 96
+    top: 216
+    right: 544
+    bottom: 456
+  depth_scale: 0.001
+  warmup_frames_requested: 30
+  warmup_frames_discarded: 30
+  valid_samples: 30
+  requested_samples: 30
+  ground_up_normal_in_depth_optical:
+  - 0.0006458380265041058
+  - -0.9464048124594788
+  - -0.322982219087649
+  pitch_about_optical_x_deg: -18.843377150898004
+  pitch_std_deg: 0.25404250588172184
+  roll_about_optical_z_deg: 0.03909932297103338
+  roll_std_deg: 0.12978558765640413
+  total_ground_normal_tilt_deg: 18.843412164584898
+  total_std_deg: 0.252784955045041
+  normal_alignment_quaternion_xyzw:
+  - -0.16369937880842098
+  - -0.0
+  - -0.0003273346874890598
+  - 0.9865102159783949
+  fit:
+    inlier_threshold_m: 0.025
+    min_inliers: 400
+    pixel_step: 8
+    min_depth_m: 0.25
+    max_depth_m: 3.0
+history:
+- stamp: '2026-05-30T13:36:00.022035+00:00'
+  note: ros_check
+  backend: ros
+  source:
+    depth_topic: /camera/depth/image_rect_raw
+    camera_info_topic: /camera/depth/camera_info
+    serial: null
+    width: null
+    height: null
+    fps: null
+  roi_fraction:
+    left: 0.15
+    right: 0.85
+    top: 0.45
+    bottom: 0.95
+  roi_pixels:
+    left: 96
+    top: 216
+    right: 544
+    bottom: 456
+  depth_scale: 0.001
+  warmup_frames_requested: 30
+  warmup_frames_discarded: 30
+  valid_samples: 30
+  requested_samples: 30
+  ground_up_normal_in_depth_optical:
+  - 0.0034501363269427
+  - -0.940944139785454
+  - -0.33854426942829435
+  pitch_about_optical_x_deg: -19.788330588824827
+  pitch_std_deg: 0.031044063439527498
+  roll_about_optical_z_deg: 0.2100840592252082
+  roll_std_deg: 0.03655462293423344
+  total_ground_normal_tilt_deg: 19.789278362916153
+  total_std_deg: 0.031118310670876337
+  normal_alignment_quaternion_xyzw:
+  - -0.17182800616465038
+  - -0.0
+  - -0.0017511152885733878
+  - 0.985125408205842
+  fit:
+    inlier_threshold_m: 0.025
+    min_inliers: 400
+    pixel_step: 8
+    min_depth_m: 0.25
+    max_depth_m: 3.0
+- stamp: '2026-05-30T13:37:45.295168+00:00'
+  note: ros_check
+  backend: ros
+  source:
+    depth_topic: /camera/depth/image_rect_raw
+    camera_info_topic: /camera/depth/camera_info
+    serial: null
+    width: null
+    height: null
+    fps: null
+  roi_fraction:
+    left: 0.15
+    right: 0.85
+    top: 0.45
+    bottom: 0.95
+  roi_pixels:
+    left: 96
+    top: 216
+    right: 544
+    bottom: 456
+  depth_scale: 0.001
+  warmup_frames_requested: 30
+  warmup_frames_discarded: 30
+  valid_samples: 30
+  requested_samples: 30
+  ground_up_normal_in_depth_optical:
+  - 0.11659672966693457
+  - -0.9403402010182282
+  - -0.31963339778560984
+  pitch_about_optical_x_deg: -18.773539718167136
+  pitch_std_deg: 1.0944962838610122
+  roll_about_optical_z_deg: 7.068267756376603
+  roll_std_deg: 1.5038398598220666
+  total_ground_normal_tilt_deg: 19.891232576627022
+  total_std_deg: 1.1840496793198525
+  normal_alignment_quaternion_xyzw:
+  - -0.16225504633681673
+  - -0.0
+  - -0.05918783176568755
+  - 0.9849721318438984
+  fit:
+    inlier_threshold_m: 0.025
+    min_inliers: 400
+    pixel_step: 8
+    min_depth_m: 0.25
+    max_depth_m: 3.0
+- stamp: '2026-05-30T13:38:11.291959+00:00'
+  note: ros_check
+  backend: ros
+  source:
+    depth_topic: /camera/depth/image_rect_raw
+    camera_info_topic: /camera/depth/camera_info
+    serial: null
+    width: null
+    height: null
+    fps: null
+  roi_fraction:
+    left: 0.15
+    right: 0.85
+    top: 0.45
+    bottom: 0.95
+  roi_pixels:
+    left: 96
+    top: 216
+    right: 544
+    bottom: 456
+  depth_scale: 0.001
+  warmup_frames_requested: 30
+  warmup_frames_discarded: 30
+  valid_samples: 30
+  requested_samples: 30
+  ground_up_normal_in_depth_optical:
+  - 0.11936745059175857
+  - -0.9400207404914025
+  - -0.3195503390472608
+  pitch_about_optical_x_deg: -18.774934625049685
+  pitch_std_deg: 1.2284882843522504
+  roll_about_optical_z_deg: 7.236906280880269
+  roll_std_deg: 1.4377360840499218
+  total_ground_normal_tilt_deg: 19.944960203144916
+  total_std_deg: 1.3094136242028687
+  normal_alignment_quaternion_xyzw:
+  - -0.16222623848338374
+  - -0.0
+  - -0.06059931766803157
+  - 0.9848910448601416
+  fit:
+    inlier_threshold_m: 0.025
+    min_inliers: 400
+    pixel_step: 8
+    min_depth_m: 0.25
+    max_depth_m: 3.0
+- stamp: '2026-05-30T13:58:21.188615+00:00'
+  note: ros_check
+  backend: ros
+  source:
+    depth_topic: /camera/depth/image_rect_raw
+    camera_info_topic: /camera/depth/camera_info
+    serial: null
+    width: null
+    height: null
+    fps: null
+  roi_fraction:
+    left: 0.15
+    right: 0.85
+    top: 0.45
+    bottom: 0.95
+  roi_pixels:
+    left: 96
+    top: 216
+    right: 544
+    bottom: 456
+  depth_scale: 0.001
+  warmup_frames_requested: 30
+  warmup_frames_discarded: 30
+  valid_samples: 30
+  requested_samples: 30
+  ground_up_normal_in_depth_optical:
+  - 0.00014241299507731644
+  - -0.9462951212708082
+  - -0.3233040723183135
+  pitch_about_optical_x_deg: -18.862859539705997
+  pitch_std_deg: 0.22082525173913264
+  roll_about_optical_z_deg: 0.008622747090978794
+  roll_std_deg: 0.12290972938247348
+  total_ground_normal_tilt_deg: 18.862861240326012
+  total_std_deg: 0.22000432622835356
+  normal_alignment_quaternion_xyzw:
+  - -0.163867123469969
+  - -0.0
+  - -7.218222672149369e-05
+  - 0.9864824178034822
+  fit:
+    inlier_threshold_m: 0.025
+    min_inliers: 400
+    pixel_step: 8
+    min_depth_m: 0.25
+    max_depth_m: 3.0
+- stamp: '2026-05-30T13:58:41.362272+00:00'
+  note: ros_check
+  backend: ros
+  source:
+    depth_topic: /camera/depth/image_rect_raw
+    camera_info_topic: /camera/depth/camera_info
+    serial: null
+    width: null
+    height: null
+    fps: null
+  roi_fraction:
+    left: 0.15
+    right: 0.85
+    top: 0.45
+    bottom: 0.95
+  roi_pixels:
+    left: 96
+    top: 216
+    right: 544
+    bottom: 456
+  depth_scale: 0.001
+  warmup_frames_requested: 30
+  warmup_frames_discarded: 30
+  valid_samples: 30
+  requested_samples: 30
+  ground_up_normal_in_depth_optical:
+  - 0.00021533628264317435
+  - -0.9461622437676497
+  - -0.3236926970119223
+  pitch_about_optical_x_deg: -18.886391690686843
+  pitch_std_deg: 0.15511675385834134
+  roll_about_optical_z_deg: 0.013039898854280679
+  roll_std_deg: 0.07692859292593168
+  total_ground_normal_tilt_deg: 18.886395573618383
+  total_std_deg: 0.15498873106293065
+  normal_alignment_quaternion_xyzw:
+  - -0.16406969922279607
+  - -0.0
+  - -0.00010914722343494617
+  - 0.9864487426540848
+  fit:
+    inlier_threshold_m: 0.025
+    min_inliers: 400
+    pixel_step: 8
+    min_depth_m: 0.25
+    max_depth_m: 3.0
+- *id001

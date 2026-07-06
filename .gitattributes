@@ -1,0 +1,57 @@
+# Normalize line endings across platforms to avoid CRLF/LF conflicts.
+# Default: treat text as text and store with LF in repo.
+* text=auto eol=lf
+
+# Windows script files keep CRLF for better compatibility on Windows hosts.
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Common source/config/documentation files: force LF.
+*.sh text eol=lf
+*.bash text eol=lf
+*.py text eol=lf
+*.cpp text eol=lf
+*.cc text eol=lf
+*.c text eol=lf
+*.h text eol=lf
+*.hpp text eol=lf
+*.launch text eol=lf
+*.xml text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.toml text eol=lf
+*.ini text eol=lf
+*.cfg text eol=lf
+*.txt text eol=lf
+*.md text eol=lf
+*.cmake text eol=lf
+CMakeLists.txt text eol=lf
+package.xml text eol=lf
+
+# Mark common binary assets to disable any end-of-line conversion.
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.webp binary
+*.ico binary
+*.pdf binary
+*.mp3 binary
+*.wav binary
+*.ogg binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.7z binary
+*.so binary
+*.a binary
+*.dll binary
+*.exe binary
+*.bin binary
+*.pt binary
+*.engine binary
+*.onnx binary
+*.bag binary
+*.db3 binary
+*.pgm binary

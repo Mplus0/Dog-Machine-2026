@@ -1,0 +1,38 @@
+# 机器人运动模型参数
+min_particles: 200       # 最小粒子数，影响定位精度和计算量
+max_particles: 2000       # 最大粒子数
+initial_pose_x: 5.5      # 初始位姿的X坐标 (米)
+initial_pose_y: 0.75     # 初始位姿的Y坐标 (米)
+initial_pose_a: 3.14159  # 初始位姿的Z轴旋转 (弧度)
+ 
+# 运动模型噪声参数
+odom_alpha1: 0.45          # 机器人旋转时，由于旋转产生的旋转误差 (rad)
+odom_alpha2: 0.45          # 机器人平移时，由于旋转产生的旋转误差 (rad)
+odom_alpha3: 0.3          # 机器人平移时，由于平移产生的平移误差 (m)
+odom_alpha4: 0.3          # 机器人旋转时，由于平移产生的平移误差 (m)
+
+# 传感器模型参数
+laser_min_range: 0.1      # 激光雷达的最小有效距离 (米)
+laser_max_range: 3.0      # 激光雷达的最大有效距离 (米)
+laser_max_beams: 180      # 参与计算的最大激光束数量，可以减少计算量
+laser_z_hit: 0.90         # 提高命中权重
+laser_z_short: 0.05       # 保持少量短读数权重
+laser_z_max: 0.0          # 远端最大量程读数权重设为0
+laser_z_rand: 0.10        # 降低随机项权重
+laser_sigma_hit: 0.2      # 匹配到障碍物的标准差
+
+# 滤波器和重采样参数
+update_min_d: 0.05         # 机器人平移超过此距离后更新粒子 (米)
+update_min_a: 0.1       # 机器人旋转超过此角度后更新粒子 (rad)
+resample_interval: 1      # 重采样的次数间隔，1表示每次更新都重采样
+
+# 机器人类型
+odom_model_type: "omni"   # 里程计模型，"diff" (差速), "omni" (全向)
+
+# 传感器信息
+scan_topic: "scan"        # 订阅的激光雷达话题
+do_beamskipping: true      # 启用beam skipping，忽略与地图矛盾的部分激光束
+beam_skip_distance: 0.5    # 小于该距离更关注（m），远处更宽容
+beam_skip_threshold: 0.3   # 允许跳过的比例阈值（0~1），保守设置
+beam_skip_error_threshold: 0.9 # 连续跳过过多时触发恢复
+laser_likelihood_max_dist: 3.0  # 与D435i当前深度有效使用距离保持一致

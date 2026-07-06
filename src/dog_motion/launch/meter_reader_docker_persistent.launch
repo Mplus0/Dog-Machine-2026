@@ -1,0 +1,78 @@
+<launch>
+  <arg name="start_camera" default="false"/>
+  <arg name="run_audio" default="true"/>
+  <arg name="run_state_store" default="true"/>
+
+  <arg name="image_topic" default="/camera/color/image_raw"/>
+  <arg name="trigger_topic" default="/meter_inspect_trigger"/>
+  <arg name="result_topic" default="/meter_status"/>
+  <arg name="ready_topic" default="/meter_inspection_ready"/>
+  <arg name="state_topic" default="/meter_state_json"/>
+  <arg name="state_file" default="$(find allmovebase)/config/meter_state.yaml"/>
+  <arg name="state_clear_on_start" default="true"/>
+  <arg name="audio_dir" default="$(find dog_motion)/audio"/>
+
+  <arg name="host_workspace" default="$(find dog_motion)"/>
+  <arg name="container_workspace" default="/workspace"/>
+  <arg name="docker_image" default="yolo11"/>
+  <arg name="docker_command" default="docker"/>
+  <arg name="model_in_container" default="/workspace/models/yuyin.engine"/>
+  <arg name="helper_host_subdir" default="docker_tools"/>
+  <arg name="sample_host_subdir" default="runtime/meter_samples"/>
+
+  <arg name="warmup_frames" default="15"/>
+  <arg name="sample_count" default="5"/>
+  <arg name="sample_interval" default="0.15"/>
+  <arg name="min_confidence" default="0.25"/>
+  <arg name="container_ready_timeout" default="90.0"/>
+  <arg name="infer_timeout" default="45.0"/>
+
+  <group if="$(arg start_camera)">
+    <include file="$(find allmovebase)/launch/camera_meter_only.launch">
+      <arg name="color_fps" value="15"/>
+    </include>
+  </group>
+
+  <node if="$(arg run_audio)"
+        pkg="dog_motion"
+        type="meter_audio_node.py"
+        name="meter_audio_node"
+        output="screen">
+    <param name="status_topic" value="$(arg result_topic)"/>
+    <param name="audio_dir" value="$(arg audio_dir)"/>
+  </node>
+
+  <node pkg="dog_motion"
+        type="meter_persistent_docker_inspection_node.py"
+        name="meter_persistent_docker_inspection_node"
+        output="screen">
+    <param name="image_topic" value="$(arg image_topic)"/>
+    <param name="trigger_topic" value="$(arg trigger_topic)"/>
+    <param name="result_topic" value="$(arg result_topic)"/>
+    <param name="ready_topic" value="$(arg ready_topic)"/>
+    <param name="host_workspace" value="$(arg host_workspace)"/>
+    <param name="container_workspace" value="$(arg container_workspace)"/>
+    <param name="docker_image" value="$(arg docker_image)"/>
+    <param name="docker_command" value="$(arg docker_command)"/>
+    <param name="model_in_container" value="$(arg model_in_container)"/>
+    <param name="helper_host_subdir" value="$(arg helper_host_subdir)"/>
+    <param name="sample_host_subdir" value="$(arg sample_host_subdir)"/>
+    <param name="warmup_frames" value="$(arg warmup_frames)"/>
+    <param name="sample_count" value="$(arg sample_count)"/>
+    <param name="sample_interval" value="$(arg sample_interval)"/>
+    <param name="min_confidence" value="$(arg min_confidence)"/>
+    <param name="container_ready_timeout" value="$(arg container_ready_timeout)"/>
+    <param name="infer_timeout" value="$(arg infer_timeout)"/>
+  </node>
+
+  <node if="$(arg run_state_store)"
+        pkg="dog_motion"
+        type="meter_state_store_node.py"
+        name="meter_state_store_node"
+        output="screen">
+    <param name="status_topic" value="$(arg result_topic)"/>
+    <param name="state_topic" value="$(arg state_topic)"/>
+    <param name="state_file" value="$(arg state_file)"/>
+    <param name="clear_on_start" value="$(arg state_clear_on_start)"/>
+  </node>
+</launch>

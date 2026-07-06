@@ -1,0 +1,5 @@
+<launch>
+  <rosparam file="$(find allmovebase)/config/odom_add_frame.yaml" command="load" ns="odom_add_frame_node"/>
+
+  <node pkg="allmovebase" type="odom_add_frame_node" name="odom_add_frame_node" output="screen"/>
+</launch>

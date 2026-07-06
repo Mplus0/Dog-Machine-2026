@@ -1,0 +1,13 @@
+# D435i printed bracket TF profile.
+#
+# Use this profile after the replacement camera bracket is installed and
+# measured. Keep it separate from camera2base_tf_tilted.yaml so the competition
+# launch can switch profiles without editing launch files.
+#
+# This file is intentionally identity for now.
+
+camera_to_base_link_transform:
+  parent_frame: "base_link"
+  child_frame: "camera_link"
+  translation: [0.2, 0.0, 0.0]  # [x, y, z], meters
+  rotation: [0.0, 0.0, 0.0, 1.0]  # [x, y, z, w], placeholder

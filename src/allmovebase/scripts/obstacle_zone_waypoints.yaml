@@ -1,0 +1,18 @@
+# Obstacle-zone standalone test waypoints.
+#
+# Coordinate convention:
+# - frame: map
+# - default obstacle test map: arena_avoidance_manual_1.pgm
+# - map size at 0.05 m resolution: 6.0 m x 1.5 m
+#
+# Current AMCL initial pose is x=5.5, y=0.75, yaw=pi, so the default test
+# travels from right to left along the center line of the obstacle zone.
+# If the robot starts on the left side, swap obs_start and obs_end.
+waypoints:
+  obs_start:
+    position: [5.50, 0.75, 0.0]
+    orientation: [0.0, 0.0, 1.0, 0.0]
+  obs_end:
+    position: [0.50, 0.75, 0.0]
+    orientation: [0.0, 0.0, 1.0, 0.0]
+

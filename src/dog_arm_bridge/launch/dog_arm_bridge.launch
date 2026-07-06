@@ -1,0 +1,36 @@
+<launch>
+  <!-- ROS1 side adapter for ROS2 arm protocol over ros1_bridge. -->
+  <arg name="task_cmd_topic" default="/dog_arm/task_cmd"/>
+  <arg name="task_result_topic" default="/dog_arm/task_result"/>
+  <arg name="base_adjust_req_topic" default="/dog_arm/base_adjust_req"/>
+  <arg name="local_task_cmd_topic" default="/dog_arm/local_task_cmd"/>
+  <arg name="task_result_event_topic" default="/dog_arm/task_result_event"/>
+  <arg name="base_adjust_event_topic" default="/dog_arm/base_adjust_event"/>
+
+  <arg name="enable_base_adjust_execution" default="false"/>
+  <arg name="base_adjust_mode" default="cmd_vel"/>
+  <arg name="cmd_vel_topic" default="/cmd_vel"/>
+  <arg name="motion_cmd_topic" default="/lite3_motion_cmd"/>
+  <arg name="base_adjust_speed_mps" default="0.05"/>
+  <arg name="base_adjust_max_step_m" default="0.20"/>
+  <arg name="base_adjust_stop_sec" default="0.20"/>
+
+  <node pkg="dog_arm_bridge"
+        type="dog_arm_bridge_node.py"
+        name="dog_arm_bridge_node"
+        output="screen">
+    <param name="task_cmd_topic" value="$(arg task_cmd_topic)"/>
+    <param name="task_result_topic" value="$(arg task_result_topic)"/>
+    <param name="base_adjust_req_topic" value="$(arg base_adjust_req_topic)"/>
+    <param name="local_task_cmd_topic" value="$(arg local_task_cmd_topic)"/>
+    <param name="task_result_event_topic" value="$(arg task_result_event_topic)"/>
+    <param name="base_adjust_event_topic" value="$(arg base_adjust_event_topic)"/>
+    <param name="enable_base_adjust_execution" value="$(arg enable_base_adjust_execution)"/>
+    <param name="base_adjust_mode" value="$(arg base_adjust_mode)"/>
+    <param name="cmd_vel_topic" value="$(arg cmd_vel_topic)"/>
+    <param name="motion_cmd_topic" value="$(arg motion_cmd_topic)"/>
+    <param name="base_adjust_speed_mps" value="$(arg base_adjust_speed_mps)"/>
+    <param name="base_adjust_max_step_m" value="$(arg base_adjust_max_step_m)"/>
+    <param name="base_adjust_stop_sec" value="$(arg base_adjust_stop_sec)"/>
+  </node>
+</launch>

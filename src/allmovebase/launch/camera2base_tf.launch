@@ -1,0 +1,14 @@
+<launch>
+  <arg name="yaml_path" default="$(find allmovebase)/config/camera2base_tf.yaml"/>
+  <arg name="transform_key" default="camera_to_base_link_transform"/>
+  <arg name="publish_hz" default="10.0"/>
+
+  <node pkg="allmovebase"
+        type="camera_static_tf_from_yaml.py"
+        name="camera_static_tf_from_yaml"
+        output="screen">
+    <param name="yaml_path" value="$(arg yaml_path)"/>
+    <param name="transform_key" value="$(arg transform_key)"/>
+    <param name="publish_hz" value="$(arg publish_hz)"/>
+  </node>
+</launch>

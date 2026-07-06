@@ -1,0 +1,3 @@
+<launch>
+  <node pkg="allmovebase" type="odom_reset_node" name="odom_reset_node"/>
+</launch>

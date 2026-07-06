@@ -1,0 +1,18 @@
+<launch>
+  <arg name="navigation_map_yaml" default="$(find allmovebase)/map/map.yaml"/>
+  <arg name="amcl_map_yaml" default="$(find allmovebase)/map/map_amcl.yaml"/>
+
+  <!-- Navigation/costmap map: physical obstacles plus 2D no-crossing boundaries. -->
+  <node pkg="map_server" type="map_server" name="navigation_map_server" args="$(arg navigation_map_yaml)">
+    <remap from="map" to="/map"/>
+    <remap from="map_metadata" to="/map_metadata"/>
+    <remap from="static_map" to="/static_map"/>
+  </node>
+
+  <!-- Localization map: only physical obstacles that can be observed by depth/scan. -->
+  <node pkg="map_server" type="map_server" name="amcl_map_server" args="$(arg amcl_map_yaml)">
+    <remap from="map" to="/amcl_map"/>
+    <remap from="map_metadata" to="/amcl_map_metadata"/>
+    <remap from="static_map" to="/amcl_static_map"/>
+  </node>
+</launch>

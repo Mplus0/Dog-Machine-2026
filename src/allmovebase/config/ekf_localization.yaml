@@ -1,0 +1,117 @@
+# EKF 本地定位配置文件
+
+# 默认发布的话题名称
+# /odometry/filtered
+
+# 频率设置
+frequency: 20
+sensor_timeout: 0.3
+two_d_mode: true
+
+# 发布tf变换
+publish_tf: true
+publish_acceleration: false
+predict_to_current_time: true
+
+# 坐标系设置
+map_frame: map
+odom_frame: odom
+base_link_frame: base_link
+world_frame: odom
+
+# 里程计输入配置
+odom0: /odom_reset
+odom0_queue_size: 100
+odom0_nodelay: true
+odom0_config: [true,  true,  false,   # x, y, z (位置)
+               false, false, true,    # roll, pitch, yaw (姿态)
+               true,  true,  false,   # vx, vy, vz (线速度)
+               false, false, true,    # vroll, vpitch, vyaw (角速度)
+               false, false, false]   # ax, ay, az (线加速度)
+
+# 里程计噪声协方差矩阵 (对角线元素)
+odom0_pose_covariance: [1e-3, 0,    0,    0,    0,    0,
+                        0,    1e-3, 0,    0,    0,    0,
+                        0,    0,    1e6,  0,    0,    0,
+                        0,    0,    0,    1e6,  0,    0,
+                        0,    0,    0,    0,    1e6,  0,
+                        0,    0,    0,    0,    0,    1e-1]
+
+odom0_twist_covariance: [1e-3, 0,    0,    0,    0,    0,
+                         0,    1e-3, 0,    0,    0,    0,
+                         0,    0,    1e6,  0,    0,    0,
+                         0,    0,    0,    1e6,  0,    0,
+                         0,    0,    0,    0,    1e6,  0,
+                         0,    0,    0,    0,    0,    1e-1]
+
+# IMU输入配置
+imu0: /imu/data_throttled
+imu0_nodelay: true
+imu0_config: [false, false, false,   # x, y, z (位置) - IMU不提供位置
+              true,  true,  true,    # roll, pitch, yaw (姿态)
+              false, false, false,   # vx, vy, vz (线速度) - IMU不提供速度
+              true,  true,  true,    # vroll, vpitch, vyaw (角速度)
+              true,  true,  true]    # ax, ay, az (线加速度)
+
+# IMU噪声协方差矩阵
+imu0_pose_covariance: [1e6, 0,    0,    0,    0,    0,
+                       0,    1e6, 0,    0,    0,    0,
+                       0,    0,    1e6, 0,    0,    0,
+                       0,    0,    0,    1e-2, 0,    0,
+                       0,    0,    0,    0,    1e-2, 0,
+                       0,    0,    0,    0,    0,    1e-1]
+
+imu0_twist_covariance: [1e6, 0,    0,    0,    0,    0,
+                        0,    1e6, 0,    0,    0,    0,
+                        0,    0,    1e6, 0,    0,    0,
+                        0,    0,    0,    1e-2, 0,    0,
+                        0,    0,    0,    0,    1e-2, 0,
+                        0,    0,    0,    0,    0,    1e-1]
+
+imu0_linear_acceleration_covariance: [1e-2, 0,    0,
+                                      0,    1e-2, 0,
+                                      0,    0,    1e-2]
+
+# 处理设置
+imu0_differential: false
+imu0_relative: true
+imu0_queue_size: 100
+imu0_remove_gravitational_acceleration: true
+
+# 初始状态协方差
+initial_estimate_covariance: [1e-9, 0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    1e-9, 0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    1e-9, 0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    1e-9, 0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    1e-9, 0,    0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    1e-9, 0,    0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    1e-9, 0,    0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    1e-9, 0,    0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    1e-9, 0,     0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    1e-9,  0,     0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     1e-9,  0,     0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     1e-9,  0,    0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     1e-9, 0,    0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    1e-9, 0,
+                              0,    0,    0,    0,    0,    0,    0,    0,    0,    0,     0,     0,     0,    0,    1e-9]
+
+# 过程噪声协方差
+process_noise_covariance: [0.05, 0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0.05, 0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0.06, 0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0.03, 0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0.03, 0,    0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0.06, 0,     0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0.025, 0,     0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0.025, 0,    0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0.04, 0,    0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0.01, 0,    0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0.01, 0,    0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0.02, 0,    0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0.01, 0,    0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0.01, 0,
+                           0,    0,    0,    0,    0,    0,    0,     0,     0,    0,    0,    0,    0,    0,    0.015]
+
+# 输出设置
+print_diagnostics: true
+debug: false

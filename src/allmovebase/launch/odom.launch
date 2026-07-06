@@ -1,0 +1,6 @@
+<launch>
+<include file="$(find allmovebase)/launch/throttle_imu.launch" />
+<include file="$(find allmovebase)/launch/odom_add_frame.launch" />
+<include file="$(find allmovebase)/launch/odom_reset.launch" />
+<include file="$(find allmovebase)/launch/ekf_localization.launch" />
+</launch>

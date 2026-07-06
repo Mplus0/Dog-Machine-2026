@@ -1,0 +1,17 @@
+CarrotPlanner:
+  # 距离目标点的距离，当机器人距离目标点小于这个值时，规划器认为已到达
+  # The distance to the goal, in meters. The planner will create a path to a point
+  # this distance away from the goal, and publish it.
+  # This is the "Carrot" part of the CarrotPlanner.
+  carrot_distance: 0.2
+
+  # 是否在代价地图中发布CarrotPlanner的轨迹
+  # Whether or not to publish the CarrotPlanner's path in the costmap.
+  # If true, the path will be published to the /carrot_path topic.
+  publish_path: false
+
+  # 是否可视化CarrotPlanner的轨迹
+  # Whether or not to visualize the CarrotPlanner's path.
+  # If true, the path will be published to the /carrot_path topic.
+  # This is the same as the publish_path parameter, but included for clarity.
+  visualize_path: false

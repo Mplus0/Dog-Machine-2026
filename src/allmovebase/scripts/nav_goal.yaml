@@ -1,0 +1,13 @@
+goals:
+  A:
+    position: [1.20, 4.60, 0.0]
+    orientation: [0.0, 0.0, 0.0, 1.0]
+  B:
+    position: [1.20, 2.90, 0.0]
+    orientation: [0.0, 0.0, 0.0, 1.0]
+  C:
+    position: [3.80, 2.90, 0.0]
+    orientation: [0.0, 0.0, 1.0, 0.0]
+  D:
+    position: [3.80, 4.60, 0.0]
+    orientation: [0.0, 0.0, 1.0, 0.0]

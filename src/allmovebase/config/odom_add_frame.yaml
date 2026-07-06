@@ -1,0 +1,4 @@
+sub_topic: "/leg_odom2"
+pub_topic: "/odom_add_frame"
+frame_id: "odom"
+child_frame_id: "base_link"

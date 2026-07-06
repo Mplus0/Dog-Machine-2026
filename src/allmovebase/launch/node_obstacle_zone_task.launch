@@ -1,0 +1,67 @@
+<launch>
+  <arg name="waypoints_yaml" default="$(find allmovebase)/config/task_poses.yaml"/>
+  <arg name="waypoint_order" default="obstacle_test"/>
+  <arg name="frame_id" default="map"/>
+  <arg name="nav_timeout" default="35.0"/>
+  <arg name="task_budget_enable" default="false"/>
+  <arg name="task_budget_total" default="300.0"/>
+  <arg name="task_budget_reserve" default="5.0"/>
+  <arg name="min_waypoint_remaining" default="10.0"/>
+  <arg name="scan_topic" default="/scan"/>
+  <arg name="obstacle_warn_distance" default="0.45"/>
+  <arg name="block_hold_seconds" default="2.0"/>
+  <arg name="require_scan" default="true"/>
+  <arg name="scan_wait_timeout" default="8.0"/>
+  <arg name="scan_stale_timeout" default="1.0"/>
+  <arg name="map_topic" default="/map"/>
+  <arg name="require_map" default="true"/>
+  <arg name="map_wait_timeout" default="30.0"/>
+  <arg name="require_tf" default="true"/>
+  <arg name="tf_wait_timeout" default="30.0"/>
+  <arg name="base_frame_id" default="base_link"/>
+  <arg name="move_base_action" default="/move_base"/>
+  <arg name="move_base_wait_timeout" default="90.0"/>
+  <arg name="move_base_retry_interval" default="2.0"/>
+  <arg name="move_base_status_topic" default="/move_base/status"/>
+  <arg name="require_move_base_status" default="true"/>
+  <arg name="move_base_status_wait_timeout" default="30.0"/>
+  <arg name="prepare_motion_host" default="true"/>
+  <arg name="motion_cmd_topic" default="/lite3_motion_cmd"/>
+  <arg name="motion_cmd_wait_timeout" default="5.0"/>
+  <arg name="motion_prepare_command" default="prepare_navigation"/>
+  <arg name="motion_prepare_wait" default="1.0"/>
+
+  <node pkg="allmovebase" type="obstacle_zone_task.py" name="obstacle_zone_task" output="screen">
+    <param name="waypoints_yaml" value="$(arg waypoints_yaml)"/>
+    <param name="waypoint_order" value="$(arg waypoint_order)"/>
+    <param name="frame_id" value="$(arg frame_id)"/>
+    <param name="nav_timeout" value="$(arg nav_timeout)"/>
+    <param name="task_budget_enable" value="$(arg task_budget_enable)"/>
+    <param name="task_budget_total" value="$(arg task_budget_total)"/>
+    <param name="task_budget_reserve" value="$(arg task_budget_reserve)"/>
+    <param name="min_waypoint_remaining" value="$(arg min_waypoint_remaining)"/>
+    <param name="scan_topic" value="$(arg scan_topic)"/>
+    <param name="obstacle_warn_distance" value="$(arg obstacle_warn_distance)"/>
+    <param name="block_hold_seconds" value="$(arg block_hold_seconds)"/>
+    <param name="require_scan" value="$(arg require_scan)"/>
+    <param name="scan_wait_timeout" value="$(arg scan_wait_timeout)"/>
+    <param name="scan_stale_timeout" value="$(arg scan_stale_timeout)"/>
+    <param name="map_topic" value="$(arg map_topic)"/>
+    <param name="require_map" value="$(arg require_map)"/>
+    <param name="map_wait_timeout" value="$(arg map_wait_timeout)"/>
+    <param name="require_tf" value="$(arg require_tf)"/>
+    <param name="tf_wait_timeout" value="$(arg tf_wait_timeout)"/>
+    <param name="base_frame_id" value="$(arg base_frame_id)"/>
+    <param name="move_base_action" value="$(arg move_base_action)"/>
+    <param name="move_base_wait_timeout" value="$(arg move_base_wait_timeout)"/>
+    <param name="move_base_retry_interval" value="$(arg move_base_retry_interval)"/>
+    <param name="move_base_status_topic" value="$(arg move_base_status_topic)"/>
+    <param name="require_move_base_status" value="$(arg require_move_base_status)"/>
+    <param name="move_base_status_wait_timeout" value="$(arg move_base_status_wait_timeout)"/>
+    <param name="prepare_motion_host" value="$(arg prepare_motion_host)"/>
+    <param name="motion_cmd_topic" value="$(arg motion_cmd_topic)"/>
+    <param name="motion_cmd_wait_timeout" value="$(arg motion_cmd_wait_timeout)"/>
+    <param name="motion_prepare_command" value="$(arg motion_prepare_command)"/>
+    <param name="motion_prepare_wait" value="$(arg motion_prepare_wait)"/>
+  </node>
+</launch>

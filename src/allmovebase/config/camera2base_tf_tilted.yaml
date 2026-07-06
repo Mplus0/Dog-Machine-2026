@@ -1,0 +1,16 @@
+# D435i tilted mount TF profile.
+#
+# Use this profile before the printed camera bracket is installed. Fill the
+# rotation after measuring with:
+#   src/tools/calibrate_d435i_ground_tilt.py
+#
+# 2026-05-30 D435i ground tilt calibration:
+# - First prone measurement excluded.
+# - Five standing measurements averaged pitch_about_optical_x_deg=-18.8282205.
+# - Open-area roll was close to zero, so only pitch compensation is applied.
+
+camera_to_base_link_transform:
+  parent_frame: "base_link"
+  child_frame: "camera_link"
+  translation: [0.2, 0.0, 0.0]  # [x, y, z], meters
+  rotation: [-0.1635689211, 0.0, 0.0, 0.9865319093]  # [x, y, z, w], pitch -18.8282205 deg

@@ -1,0 +1,33 @@
+<launch>
+  <!-- Shared navigation stack: sensors, odometry, map, localization, and move_base. -->
+  <arg name="start_camera" default="true"/>
+  <arg name="camera_enable_color" default="false"/>
+  <arg name="camera_align_depth" default="false"/>
+  <arg name="camera_color_fps" default="5"/>
+  <arg name="camera_depth_fps" default="15"/>
+  <arg name="camera_tf_yaml" default="$(find allmovebase)/config/camera2base_tf.yaml"/>
+  <arg name="navigation_map_yaml" default="$(find allmovebase)/map/map.yaml"/>
+  <arg name="amcl_map_yaml" default="$(find allmovebase)/map/map_amcl.yaml"/>
+
+  <group if="$(arg start_camera)">
+    <include file="$(find allmovebase)/launch/camera.launch">
+      <arg name="align_depth" value="$(arg camera_align_depth)"/>
+      <arg name="enable_color" value="$(arg camera_enable_color)"/>
+      <arg name="color_fps" value="$(arg camera_color_fps)"/>
+      <arg name="depth_fps" value="$(arg camera_depth_fps)"/>
+    </include>
+  </group>
+
+  <include file="$(find allmovebase)/launch/camera2base_tf.launch">
+    <arg name="yaml_path" value="$(arg camera_tf_yaml)"/>
+  </include>
+  <include file="$(find allmovebase)/launch/odom.launch"/>
+  <include file="$(find allmovebase)/launch/depth2laser.launch"/>
+  <include file="$(find allmovebase)/launch/map_server.launch">
+    <arg name="navigation_map_yaml" value="$(arg navigation_map_yaml)"/>
+    <arg name="amcl_map_yaml" value="$(arg amcl_map_yaml)"/>
+  </include>
+  <include file="$(find allmovebase)/launch/amcl.launch"/>
+  <include file="$(find allmovebase)/launch/movebase.launch"/>
+</launch>
+

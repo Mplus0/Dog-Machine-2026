@@ -1,0 +1,13 @@
+GlobalPlanner:
+  # --- 路径规划算法参数 ---
+  allow_unknown: true          # 是否允许在未知区域进行规划
+  default_tolerance: 0.5       # 全局规划器找不到路径时使用的容忍度（m）
+  visualize_potential: false   # 是否可视化势能场
+  
+  # --- 规划器行为参数 ---
+  use_dijkstra: false          # 是否使用 Dijkstra 算法，如果为 false，则使用 A* 算法
+  use_quadratic: true          # 是否使用二次插值进行路径平滑
+  use_grid_path: true         # 是否使用栅格路径，如果为 true，则路径会沿着栅格线
+  
+  # --- 成本参数 ---
+  # cost_factor: 3.0           # 成本因子，用于调整路径的成本

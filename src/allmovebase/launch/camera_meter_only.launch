@@ -1,0 +1,9 @@
+<launch>
+  <arg name="color_fps" default="15"/>
+
+  <include file="$(find allmovebase)/launch/camera.launch">
+    <arg name="enable_depth" value="false"/>
+    <arg name="enable_color" value="true"/>
+    <arg name="color_fps" value="$(arg color_fps)"/>
+  </include>
+</launch>

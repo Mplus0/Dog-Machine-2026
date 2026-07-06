@@ -1,0 +1,22 @@
+# --- 通用参数配置 ---
+# 定义机器人的足迹（footprint）。
+footprint: [[-0.27, -0.17], [-0.27, 0.17], [0.27, 0.17], [0.27, -0.17]]
+footprint_padding: 0.1
+
+# --- 障碍物层参数配置（仅激光源，plugins 机制）---
+obstacle_layer:
+  enabled: true
+  observation_sources: laser_scan_sensor
+  laser_scan_sensor:
+    topic: /scan
+    data_type: LaserScan
+    marking: true
+    clearing: true
+    obstacle_range: 3.0
+    raytrace_range: 3.0
+
+# --- 膨胀层参数配置 ---
+inflation_layer:
+  enabled: true
+  inflation_radius: 0.4   # 膨胀半径（米），对齐厂家配置
+  cost_scaling_factor: 7.0 # 成本比例因子

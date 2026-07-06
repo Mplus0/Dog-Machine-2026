@@ -1,0 +1,4 @@
+<launch>
+  <node pkg="topic_tools" type="throttle" name="imu_throttler" output="screen"
+        args="messages /imu/data 30 /imu/data_throttled" />
+</launch>

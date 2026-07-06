@@ -1,0 +1,57 @@
+Panels:
+  - Class: rviz/Displays
+    Name: Displays
+  - Class: rviz/Selection
+    Name: Selection
+  - Class: rviz/Tool Properties
+    Name: Tool Properties
+  - Class: rviz/Views
+    Name: Views
+  - Class: rviz/Time
+    Name: Time
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz/Grid
+      Color: 160; 160; 160
+      Enabled: true
+      Name: Grid
+      Plane: XY
+      Plane Cell Count: 20
+      Reference Frame: base_link
+      Value: true
+    - Class: rviz/TF
+      Enabled: true
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Value: true
+    - Class: rviz/RobotModel
+      Enabled: true
+      Name: RobotModel
+      Robot Description: robot_description
+      Value: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: base_link
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz/Interact
+    - Class: rviz/MoveCamera
+    - Class: rviz/Select
+  Value: true
+  Views:
+    Current:
+      Class: rviz/Orbit
+      Distance: 2.0
+      Focal Point: 0; 0; 0.2
+      Pitch: 0.7
+      Yaw: 0.9
+Window Geometry:
+  Height: 900
+  Width: 1400

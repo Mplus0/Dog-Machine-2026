@@ -1,0 +1,59 @@
+# Task pose registry.
+#
+# All poses use the map frame. Position is [x, y, z], orientation is quaternion
+# [x, y, z, w]. Fill these placeholders with poses recorded on the real map.
+
+goals:
+  # Meter recognition pose placeholders. The robot navigates to these poses,
+  # triggers meter inspection, and stores the detected region/status pair.
+  rec_pose_1:
+    position: [0.50, 2.00, 0.0]
+    orientation: [0.0, 0.0, 0.0, 1.0]
+  rec_pose_2:
+    position: [0.50, 4.50, 0.0]
+    orientation: [0.0, 0.0, 0.0, 1.0]
+  rec_pose_3:
+    position: [2.50, 2.00, 0.0]
+    orientation: [0.0, 0.0, 1.0, 0.0]
+  rec_pose_4:
+    position: [2.50, 4.50, 0.0]
+    orientation: [0.0, 0.0, 1.0, 0.0]
+
+  # Pick-and-place task placeholders. Fill these with recorded poses before
+  # running task_2026_pick_place.launch on the real field.
+  pickup_pose:
+    position: [0.0, 0.0, 0.0]
+    orientation: [0.0, 0.0, 0.0, 1.0]
+  place_pose_A:
+    position: [0.0, 0.0, 0.0]
+    orientation: [0.0, 0.0, 0.0, 1.0]
+  place_pose_B:
+    position: [0.0, 0.0, 0.0]
+    orientation: [0.0, 0.0, 0.0, 1.0]
+  place_pose_C:
+    position: [0.0, 0.0, 0.0]
+    orientation: [0.0, 0.0, 0.0, 1.0]
+  place_pose_D:
+    position: [0.0, 0.0, 0.0]
+    orientation: [0.0, 0.0, 0.0, 1.0]
+
+waypoints:
+  # Obstacle-zone standalone test segment.
+  obs_start:
+    position: [5.50, 0.75, 0.0]
+    orientation: [0.0, 0.0, 1.0, 0.0]
+  obs_end:
+    position: [0.50, 0.75, 0.0]
+    orientation: [0.0, 0.0, 1.0, 0.0]
+
+sequences:
+  recognition: [rec_pose_1, rec_pose_2, rec_pose_4, rec_pose_3]
+  obstacle_test: [obs_start, obs_end]
+  pick_place:
+    pickup: pickup_pose
+    places:
+      A: place_pose_A
+      B: place_pose_B
+      C: place_pose_C
+      D: place_pose_D
+

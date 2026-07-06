@@ -1,0 +1,17 @@
+<launch>
+
+<node pkg="amcl" type="amcl" name="amcl">
+    <remap from="scan" to="/scan"/>
+    <remap from="odom" to="/odometry/filtered"/>
+    <remap from="map" to="/amcl_map" />
+    <remap from="static_map" to="/amcl_static_map" />
+    <rosparam file="$(find allmovebase)/config/amcl.yaml" command="load" />
+    <param name="use_map_topic" value="true"/>
+    <param name="transform_tolerance" value="0.5"/>
+    <param name="odom_frame_id" value="odom"/>
+    <param name="base_frame_id" value="base_link"/>
+    <param name="global_frame_id" value="map"/>   
+     
+</node>
+
+</launch>

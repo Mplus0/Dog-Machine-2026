@@ -1,0 +1,20 @@
+<launch>
+  <!-- Select one specific URDF under this package. -->
+  <arg name="urdf_path" default="$(find lite3_description)/Lite3/urdf/Lite3.urdf"/>
+  <arg name="use_gui" default="true"/>
+  <arg name="start_rviz" default="true"/>
+  <arg name="rviz_config" default="$(find lite3_description)/rviz/lite3_model_check.rviz"/>
+
+  <param name="robot_description" textfile="$(arg urdf_path)"/>
+
+  <node if="$(arg use_gui)" pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher_gui"/>
+  <node unless="$(arg use_gui)" pkg="joint_state_publisher" type="joint_state_publisher" name="joint_state_publisher"/>
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
+
+  <!-- Manufacturer URDF root link is TORSO; bridge it to nav frame name base_link. -->
+  <node pkg="tf2_ros" type="static_transform_publisher" name="base_link_to_torso_tf"
+        args="0 0 0 0 0 0 base_link TORSO"/>
+
+  <node if="$(arg start_rviz)" pkg="rviz" type="rviz" name="rviz" args="-d $(arg rviz_config)"/>
+</launch>

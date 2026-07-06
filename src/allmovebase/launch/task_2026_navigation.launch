@@ -1,0 +1,91 @@
+<launch>
+  <!-- Top-level navigation task: motion bridge + nav stack + persistent Docker meter inspection + sequential inspection. -->
+  <arg name="start_camera" default="true"/>
+  <arg name="camera_enable_color" default="false"/>
+  <arg name="camera_align_depth" default="false"/>
+  <arg name="camera_color_fps" default="5"/>
+  <arg name="camera_depth_fps" default="15"/>
+  <arg name="manage_color_stream" default="true"/>
+  <arg name="run_meter_audio" default="true"/>
+  <arg name="host_workspace" default="$(find dog_motion)"/>
+  <arg name="docker_command" default="docker"/>
+  <arg name="model_in_container" default="/workspace/models/yuyin.engine"/>
+  <arg name="prepare_motion_host" default="true"/>
+  <arg name="motion_cmd_wait_timeout" default="5.0"/>
+  <arg name="motion_prepare_command" default="prepare_navigation"/>
+  <arg name="motion_prepare_wait" default="1.0"/>
+  <arg name="task_budget_enable" default="false"/>
+  <arg name="task_budget_total" default="300.0"/>
+  <arg name="task_budget_reserve" default="5.0"/>
+  <arg name="min_inspection_point_remaining" default="12.0"/>
+  <arg name="pre_detect_motion_command" default="inspection_view_pose"/>
+  <arg name="post_detect_motion_command" default="navigation_view_pose"/>
+  <arg name="detect_pose_settle" default="1.0"/>
+  <arg name="inspection_pitch_value" default="-6553"/>
+  <arg name="navigation_pitch_value" default="0"/>
+  <arg name="standing_basic_states" default="6,9"/>
+  <arg name="lie_basic_states" default="1"/>
+  <arg name="spot_basic_states" default="6,9"/>
+  <arg name="move_basic_states" default="6,9"/>
+  <arg name="mode_switch_timeout" default="3.0"/>
+  <arg name="mode_switch_retry_count" default="3"/>
+  <arg name="camera_tf_yaml" default="$(find allmovebase)/config/camera2base_tf.yaml"/>
+  <arg name="navigation_map_yaml" default="$(find allmovebase)/map/map.yaml"/>
+  <arg name="amcl_map_yaml" default="$(find allmovebase)/map/map_amcl.yaml"/>
+
+  <include file="$(find message_transformer)/launch/message_transformer.launch">
+    <arg name="inspection_pitch_value" value="$(arg inspection_pitch_value)"/>
+    <arg name="navigation_pitch_value" value="$(arg navigation_pitch_value)"/>
+    <arg name="standing_basic_states" value="$(arg standing_basic_states)"/>
+    <arg name="lie_basic_states" value="$(arg lie_basic_states)"/>
+    <arg name="spot_basic_states" value="$(arg spot_basic_states)"/>
+    <arg name="move_basic_states" value="$(arg move_basic_states)"/>
+    <arg name="mode_switch_timeout" value="$(arg mode_switch_timeout)"/>
+    <arg name="mode_switch_retry_count" value="$(arg mode_switch_retry_count)"/>
+  </include>
+  <include file="$(find allmovebase)/launch/stack_nav_base.launch">
+    <arg name="start_camera" value="$(arg start_camera)"/>
+    <arg name="camera_align_depth" value="$(arg camera_align_depth)"/>
+    <arg name="camera_enable_color" value="$(arg camera_enable_color)"/>
+    <arg name="camera_color_fps" value="$(arg camera_color_fps)"/>
+    <arg name="camera_depth_fps" value="$(arg camera_depth_fps)"/>
+    <arg name="camera_tf_yaml" value="$(arg camera_tf_yaml)"/>
+    <arg name="navigation_map_yaml" value="$(arg navigation_map_yaml)"/>
+    <arg name="amcl_map_yaml" value="$(arg amcl_map_yaml)"/>
+  </include>
+
+  <include file="$(find dog_motion)/launch/meter_reader_docker_persistent.launch">
+    <arg name="start_camera" value="false"/>
+    <arg name="run_audio" value="$(arg run_meter_audio)"/>
+    <arg name="host_workspace" value="$(arg host_workspace)"/>
+    <arg name="docker_command" value="$(arg docker_command)"/>
+    <arg name="model_in_container" value="$(arg model_in_container)"/>
+    <arg name="warmup_frames" value="15"/>
+    <arg name="sample_count" value="5"/>
+  </include>
+
+  <include file="$(find allmovebase)/launch/node_sequential_nav_inspect.launch">
+    <arg name="prepare_motion_host" value="$(arg prepare_motion_host)"/>
+    <arg name="motion_cmd_wait_timeout" value="$(arg motion_cmd_wait_timeout)"/>
+    <arg name="motion_prepare_command" value="$(arg motion_prepare_command)"/>
+    <arg name="motion_prepare_wait" value="$(arg motion_prepare_wait)"/>
+    <arg name="task_budget_enable" value="$(arg task_budget_enable)"/>
+    <arg name="task_budget_total" value="$(arg task_budget_total)"/>
+    <arg name="task_budget_reserve" value="$(arg task_budget_reserve)"/>
+    <arg name="min_inspection_point_remaining" value="$(arg min_inspection_point_remaining)"/>
+    <arg name="pre_detect_motion_command" value="$(arg pre_detect_motion_command)"/>
+    <arg name="post_detect_motion_command" value="$(arg post_detect_motion_command)"/>
+    <arg name="detect_pose_settle" value="$(arg detect_pose_settle)"/>
+    <arg name="move_base_wait_timeout" value="90.0"/>
+    <arg name="move_base_retry_interval" value="2.0"/>
+    <arg name="detect_timeout" value="45.0"/>
+    <arg name="detect_trigger_topic" value="/meter_inspect_trigger"/>
+    <arg name="detect_result_topic" value="/meter_status"/>
+    <arg name="detect_ready_topic" value="/meter_inspection_ready"/>
+    <arg name="detect_ready_timeout" value="120.0"/>
+    <arg name="detect_start_command" value="{goal}"/>
+    <arg name="manage_color_stream" value="$(arg manage_color_stream)"/>
+    <arg name="color_image_topic" value="/camera/color/image_raw"/>
+    <arg name="color_stream_wait_timeout" value="8.0"/>
+  </include>
+</launch>

@@ -1,0 +1,49 @@
+DWAPlannerROS:
+  # --- 机器人配置参数 ---
+  # 机器人运动学限制，这些参数需要根据你机器人的实际性能进行调整。
+  max_vel_x: 0.5        # X轴最大速度 (m/s)
+  min_vel_x: 0.1        # X轴最小速度 (m/s)
+  max_vel_y: 0.5        # Y轴最大速度，非全向轮机器人设为0
+  min_vel_y: 0.1        # Y轴最小速度，非全向轮机器人设为0
+  max_vel_trans: 0.5    # 最大平移速度 (m/s)
+  min_vel_trans: 0.1    # 最小平移速度 (m/s)
+
+  max_vel_theta: 1.0      # 最大旋转速度 (rad/s)
+  min_vel_theta: 0.4   .   # 最小旋转速度 (rad/s)
+  acc_lim_x: 1.0        # X轴加速度限制 (m/s^2)
+  acc_lim_y: 1.0        # Y轴加速度限制，非全向轮机器人设为0
+  acc_lim_theta: 2.0    # 旋转加速度限制 (rad/s^2)
+  
+  # --- 目标和路径参数 ---
+  # 这些参数定义了DWA如何处理目标和全局路径
+  path_distance_bias: 32.0   # 路径距离偏置，值越大，越倾向于跟随全局路径
+  goal_distance_bias: 24.0   # 目标距离偏置，值越大，越倾向于接近目标点
+  
+  # --- 避障参数 ---
+  # 这些参数定义了DWA如何避免碰撞
+  occdist_scale: 0.05       # 障碍物距离成本比例因子，值越大，避障越保守
+  
+  # --- 模拟参数 ---
+  # 定义DWA的模拟行为
+  sim_time: 1.5           # 模拟时间窗口（秒），用于预测轨迹
+  sim_granularity: 0.025  # 模拟步长，用于轨迹离散化
+  vx_samples: 20          # 采样X轴速度的数量
+  vy_samples: 0           # 采样Y轴速度的数量，非全向轮机器人设为0
+  vth_samples: 40         # 采样旋转速度的数量
+
+  # --- 行为参数 ---
+  # DWA的行为，例如是否在原地旋转
+  # yaw_goal_tolerance: 0.05   # 目标角度容忍度（rad）
+  # xy_goal_tolerance: 0.1     # 目标XY距离容忍度（m）
+  
+  # 如果机器人需要原地旋转，将这两个参数设为true
+  theta_stopped_vel: 0.01      # 当旋转速度低于此值时，认为机器人已停止
+  trans_stopped_vel: 0.01    # 当平移速度低于此值时，认为机器人已停止
+  
+  # --- 调试参数 ---
+  # publish_traj_pc: true      # 是否发布模拟轨迹
+  # publish_cost_grid: true    # 是否发布成本网格
+  
+  # --- 规划器类型 ---
+  # 用于指定DWA规划器使用的类型
+  dwa: true # 使用 DWA 规划器

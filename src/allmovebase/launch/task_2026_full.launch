@@ -1,0 +1,150 @@
+<launch>
+  <!-- Top-level full task: stand/prepare -> obstacle -> recognition -> pick/place. -->
+  <arg name="start_camera" default="true"/>
+  <arg name="camera_enable_color" default="false"/>
+  <arg name="camera_align_depth" default="false"/>
+  <arg name="camera_color_fps" default="5"/>
+  <arg name="camera_depth_fps" default="15"/>
+  <arg name="manage_color_stream" default="true"/>
+  <arg name="run_meter_audio" default="true"/>
+  <arg name="host_workspace" default="$(find dog_motion)"/>
+  <arg name="docker_command" default="docker"/>
+  <arg name="model_in_container" default="/workspace/models/yuyin.engine"/>
+  <arg name="camera_tf_yaml" default="$(find allmovebase)/config/camera2base_tf.yaml"/>
+  <arg name="navigation_map_yaml" default="$(find allmovebase)/map/map.yaml"/>
+  <arg name="amcl_map_yaml" default="$(find allmovebase)/map/map_amcl.yaml"/>
+
+  <arg name="goals_yaml" default="$(find allmovebase)/config/task_poses.yaml"/>
+  <arg name="meter_state_file" default="$(find allmovebase)/config/meter_state.yaml"/>
+  <arg name="run_obstacle" default="true"/>
+  <arg name="run_inspection" default="true"/>
+  <arg name="run_pick_place" default="true"/>
+  <arg name="obstacle_sequence" default="obstacle_test"/>
+  <arg name="inspection_sequence" default="recognition"/>
+  <arg name="region_order" default="A,B,C,D"/>
+  <arg name="max_abnormal_count" default="2"/>
+  <arg name="nav_timeout" default="45.0"/>
+  <arg name="task_budget_enable" default="true"/>
+  <arg name="task_budget_total" default="300.0"/>
+  <arg name="task_budget_start_after_prerequisites" default="true"/>
+  <arg name="task_budget_reserve" default="5.0"/>
+  <arg name="min_obstacle_remaining" default="30.0"/>
+  <arg name="min_inspection_remaining" default="60.0"/>
+  <arg name="min_pick_place_remaining" default="45.0"/>
+
+  <arg name="prepare_motion_host" default="true"/>
+  <arg name="motion_cmd_wait_timeout" default="5.0"/>
+  <arg name="motion_prepare_command" default="prepare_navigation"/>
+  <arg name="motion_prepare_wait" default="1.0"/>
+  <arg name="standing_basic_states" default="6,9"/>
+  <arg name="lie_basic_states" default="1"/>
+  <arg name="spot_basic_states" default="6,9"/>
+  <arg name="move_basic_states" default="6,9"/>
+  <arg name="mode_switch_timeout" default="3.0"/>
+  <arg name="mode_switch_retry_count" default="3"/>
+  <arg name="inspection_pitch_value" default="-6553"/>
+  <arg name="navigation_pitch_value" default="0"/>
+
+  <arg name="pre_detect_motion_command" default="inspection_view_pose"/>
+  <arg name="post_detect_motion_command" default="navigation_view_pose"/>
+  <arg name="detect_pose_settle" default="1.0"/>
+  <arg name="detect_timeout" default="45.0"/>
+  <arg name="detect_ready_timeout" default="120.0"/>
+  <arg name="post_detect_hold" default="4.0"/>
+
+  <arg name="arm_cmd_topic" default="/dog_arm/task_cmd"/>
+  <arg name="arm_result_topic" default="/dog_arm/task_result"/>
+  <arg name="arm_base_adjust_event_topic" default="/dog_arm/base_adjust_event"/>
+  <arg name="arm_pick_command" default="pick"/>
+  <arg name="arm_place_command" default="place_to_zone"/>
+  <arg name="arm_wait" default="120.0"/>
+  <arg name="arm_pick_timeout" default="180.0"/>
+  <arg name="arm_place_timeout" default="60.0"/>
+  <arg name="arm_base_adjust_settle" default="1.0"/>
+  <arg name="arm_max_pick_adjust_retries" default="1"/>
+  <arg name="arm_command_required" default="false"/>
+  <arg name="start_dog_arm_bridge" default="true"/>
+  <arg name="enable_arm_base_adjust_execution" default="false"/>
+
+  <include file="$(find message_transformer)/launch/message_transformer.launch">
+    <arg name="inspection_pitch_value" value="$(arg inspection_pitch_value)"/>
+    <arg name="navigation_pitch_value" value="$(arg navigation_pitch_value)"/>
+    <arg name="standing_basic_states" value="$(arg standing_basic_states)"/>
+    <arg name="lie_basic_states" value="$(arg lie_basic_states)"/>
+    <arg name="spot_basic_states" value="$(arg spot_basic_states)"/>
+    <arg name="move_basic_states" value="$(arg move_basic_states)"/>
+    <arg name="mode_switch_timeout" value="$(arg mode_switch_timeout)"/>
+    <arg name="mode_switch_retry_count" value="$(arg mode_switch_retry_count)"/>
+  </include>
+
+  <include file="$(find allmovebase)/launch/stack_nav_base.launch">
+    <arg name="start_camera" value="$(arg start_camera)"/>
+    <arg name="camera_align_depth" value="$(arg camera_align_depth)"/>
+    <arg name="camera_enable_color" value="$(arg camera_enable_color)"/>
+    <arg name="camera_color_fps" value="$(arg camera_color_fps)"/>
+    <arg name="camera_depth_fps" value="$(arg camera_depth_fps)"/>
+    <arg name="camera_tf_yaml" value="$(arg camera_tf_yaml)"/>
+    <arg name="navigation_map_yaml" value="$(arg navigation_map_yaml)"/>
+    <arg name="amcl_map_yaml" value="$(arg amcl_map_yaml)"/>
+  </include>
+
+  <group if="$(arg start_dog_arm_bridge)">
+    <include file="$(find dog_arm_bridge)/launch/dog_arm_bridge.launch">
+      <arg name="enable_base_adjust_execution" value="$(arg enable_arm_base_adjust_execution)"/>
+    </include>
+  </group>
+
+  <group if="$(arg run_inspection)">
+    <include file="$(find dog_motion)/launch/meter_reader_docker_persistent.launch">
+      <arg name="start_camera" value="false"/>
+      <arg name="run_audio" value="$(arg run_meter_audio)"/>
+      <arg name="host_workspace" value="$(arg host_workspace)"/>
+      <arg name="docker_command" value="$(arg docker_command)"/>
+      <arg name="model_in_container" value="$(arg model_in_container)"/>
+      <arg name="warmup_frames" value="15"/>
+      <arg name="sample_count" value="5"/>
+    </include>
+  </group>
+
+  <node pkg="allmovebase" type="full_task.py" name="full_task" output="screen">
+    <param name="goals_yaml" value="$(arg goals_yaml)"/>
+    <param name="meter_state_file" value="$(arg meter_state_file)"/>
+    <param name="run_obstacle" value="$(arg run_obstacle)"/>
+    <param name="run_inspection" value="$(arg run_inspection)"/>
+    <param name="run_pick_place" value="$(arg run_pick_place)"/>
+    <param name="obstacle_sequence" value="$(arg obstacle_sequence)"/>
+    <param name="inspection_sequence" value="$(arg inspection_sequence)"/>
+    <param name="region_order" value="$(arg region_order)"/>
+    <param name="max_abnormal_count" value="$(arg max_abnormal_count)"/>
+    <param name="nav_timeout" value="$(arg nav_timeout)"/>
+    <param name="task_budget_enable" value="$(arg task_budget_enable)"/>
+    <param name="task_budget_total" value="$(arg task_budget_total)"/>
+    <param name="task_budget_start_after_prerequisites" value="$(arg task_budget_start_after_prerequisites)"/>
+    <param name="task_budget_reserve" value="$(arg task_budget_reserve)"/>
+    <param name="min_obstacle_remaining" value="$(arg min_obstacle_remaining)"/>
+    <param name="min_inspection_remaining" value="$(arg min_inspection_remaining)"/>
+    <param name="min_pick_place_remaining" value="$(arg min_pick_place_remaining)"/>
+    <param name="prepare_motion_host" value="$(arg prepare_motion_host)"/>
+    <param name="motion_cmd_wait_timeout" value="$(arg motion_cmd_wait_timeout)"/>
+    <param name="motion_prepare_command" value="$(arg motion_prepare_command)"/>
+    <param name="motion_prepare_wait" value="$(arg motion_prepare_wait)"/>
+    <param name="pre_detect_motion_command" value="$(arg pre_detect_motion_command)"/>
+    <param name="post_detect_motion_command" value="$(arg post_detect_motion_command)"/>
+    <param name="detect_pose_settle" value="$(arg detect_pose_settle)"/>
+    <param name="detect_timeout" value="$(arg detect_timeout)"/>
+    <param name="detect_ready_timeout" value="$(arg detect_ready_timeout)"/>
+    <param name="post_detect_hold" value="$(arg post_detect_hold)"/>
+    <param name="manage_color_stream" value="$(arg manage_color_stream)"/>
+    <param name="arm_cmd_topic" value="$(arg arm_cmd_topic)"/>
+    <param name="arm_result_topic" value="$(arg arm_result_topic)"/>
+    <param name="arm_base_adjust_event_topic" value="$(arg arm_base_adjust_event_topic)"/>
+    <param name="arm_pick_command" value="$(arg arm_pick_command)"/>
+    <param name="arm_place_command" value="$(arg arm_place_command)"/>
+    <param name="arm_wait" value="$(arg arm_wait)"/>
+    <param name="arm_pick_timeout" value="$(arg arm_pick_timeout)"/>
+    <param name="arm_place_timeout" value="$(arg arm_place_timeout)"/>
+    <param name="arm_base_adjust_settle" value="$(arg arm_base_adjust_settle)"/>
+    <param name="arm_max_pick_adjust_retries" value="$(arg arm_max_pick_adjust_retries)"/>
+    <param name="arm_command_required" value="$(arg arm_command_required)"/>
+  </node>
+</launch>

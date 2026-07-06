@@ -1,0 +1,15 @@
+# YOLO GStreamer cone-filtered node parameters
+
+# Optional: absolute path to model (.engine preferred, fallback .pt). If empty, node auto-discovers
+model_path: ""
+
+gst_width: 1280
+gst_height: 720
+
+# Result cache size before settlement
+cache_size: 5
+
+# Create a fresh pipeline per frame for stability (slower). Set false for persistent pipeline (faster)
+fresh_per_frame: true
+
+

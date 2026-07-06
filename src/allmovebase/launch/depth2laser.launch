@@ -1,0 +1,33 @@
+<!--
+	Sample launch file for depthimage_to_laserscan
+	As of September 2nd 2021.
+-->
+
+<launch>
+  <arg name="depth_image_topic" default="/camera/depth/image_rect_raw"/>
+  <arg name="depth_camera_info_topic" default="/camera/depth/camera_info"/>
+  <arg name="scan_height" default="1"/>
+  <arg name="scan_time" default="0.033"/>
+  <arg name="range_min" default="0.1"/>
+  <arg name="range_max" default="3.0"/>
+  <arg name="output_frame_id" default="camera_link"/>
+
+  <!-- Depth Image to Laser Scan Node -->
+  <node name="depthimage_to_laserscan" pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" args="">
+
+    <remap from="image"       to="$(arg depth_image_topic)"/> <!-- change here for your camera depth topic name. Default: "/camera/depth/image_raw" -->
+
+    <remap from="camera_info" to="$(arg depth_camera_info_topic)"/> 
+    <!-- the remap for camera_info by default uses the same path as the one given to the image topic. Default: "<path_to_image_topic>/camera_info>" -->
+
+    <!-- PARAMETERS: -->
+    <!-- These are the default values. --> 
+    <param name="scan_height"     type="int"    value="$(arg scan_height)"/> <!-- default: 1 pixel. Number of pixel rows used to generate laser scan. -->
+    <param name="scan_time"       type="double" value="$(arg scan_time)"/> <!-- default:0.033, 30 FPS . Time between scans. -->
+    <param name="range_min"       type="double" value="$(arg range_min)"/> <!--default:0.45m. Ranges less than this are considered -Inf. -->
+    <param name="range_max"       type="double" value="$(arg range_max)"/> <!--default: 10m. Ranges greater than this are considered +Inf. -->
+    <param name="output_frame_id" type="str"    value="$(arg output_frame_id)"/> <!--default: camera_depth_frame. Frame id of the laser scan. -->
+	
+  </node>
+	
+</launch>

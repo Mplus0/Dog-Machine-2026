@@ -1,0 +1,32 @@
+# Copy this file to private_robot_access.yaml on each machine and fill local secrets there.
+# private_robot_access.yaml is ignored by git.
+
+robot_hotspot_ip: 192.168.137.144
+developer_wifi_ssid: jj6
+perception_wifi_adapter: 8188ETV
+robot_wifi_ssid: YSC-JYML-gb9zfq-5G
+perception_robot_ap_interface: wlan1
+perception_robot_ap_ip: 192.168.2.213
+perception_host: 192.168.1.103
+motion_host: 192.168.1.120
+motion_host_hotspot_alias: 192.168.137.120
+motion_host_p2p: 192.168.2.1
+
+perception_host_ssh_user: ysc
+perception_host_ssh_password: ""
+
+motion_host_ssh_user: ysc
+motion_host_ssh_password: ""
+motion_host_sudo_password: ""
+sudo_password_same_as_ssh: true
+
+# Set true if you want motion_host_packet_capture.py remote-capture to use sshpass -e.
+# Requires: sudo apt install sshpass
+sshpass: false
+
+# Keep both false unless remote tcpdump cannot run without sudo.
+sudo: false
+sudo_with_password: false
+
+handheld_ip: 192.168.2.62
+tablet_ip: 192.168.2.16

@@ -1,0 +1,45 @@
+# --- 恢复行为参数配置 ---
+# recovery_behaviors 参数需要直接在 move_base 节点下配置
+# 或者通过 rosparam 加载到 move_base 的命名空间
+recovery_behaviors:
+  - name: "conservative_clear"
+    type: "clear_costmap_recovery/ClearCostmapRecovery"
+  - name: "aggressive_clear"
+    type: "clear_costmap_recovery/ClearCostmapRecovery"
+  - name: "rotate_recovery"
+    type: "rotate_recovery/RotateRecovery"
+  - name: "local_planner_recovery"
+    type: "move_slow_and_clear/MoveSlowAndClear"
+
+# --- 清理代价地图恢复行为的参数 ---
+# 这是一个非常保守的清理行为，只会清除局部代价地图
+conservative_clear:
+  reset_distance: 0.5           # 清理代价地图的距离（米）
+  layer_names: ["obstacle_layer"] # 只清理障碍物层
+
+# 这是一个更激进的清理行为，会清除更大的范围
+aggressive_clear:
+  reset_distance: 1.5
+  layer_names: ["obstacle_layer"]
+
+# --- 原地旋转恢复行为的参数 ---
+rotate_recovery:
+  sim_granularity: 0.01         # 模拟步长（弧度）
+  frequency: 5.0                # 旋转速度控制频率（Hz）
+  max_rotational_vel: 1.0       # 最大旋转速度（rad/s）
+  acc_lim_th: 1.0               # 旋转加速度限制（rad/s^2）
+  # 以下是恢复行为的超时参数
+  # 每次恢复行为执行的最大时长，如果超过此时间仍未脱困，会尝试下一个恢复行为
+  recovery_timeout: 10.0
+
+# --- 慢速移动并清理的恢复行为（move_slow_and_clear）---
+# 这是 move_base Noetic 版本新增的恢复行为，非常有用
+# 它在清理代价地图的同时，尝试缓慢移动
+local_planner_recovery:
+  # 参数与 dwa_local_planner_params.yaml 中的相似，但通常更保守
+  max_vel_x: 0.1
+  min_vel_x: -0.1
+  max_rot_vel: 0.5
+  min_rot_vel: -0.5
+  acc_lim_x: 0.5
+  acc_lim_th: 0.5

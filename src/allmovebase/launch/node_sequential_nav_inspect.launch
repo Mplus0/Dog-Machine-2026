@@ -1,0 +1,76 @@
+<launch>
+  <arg name="goals_yaml" default="$(find allmovebase)/config/task_poses.yaml"/>
+  <arg name="frame_id" default="map"/>
+  <arg name="nav_timeout" default="40.0"/>
+  <arg name="task_budget_enable" default="false"/>
+  <arg name="task_budget_total" default="300.0"/>
+  <arg name="task_budget_reserve" default="5.0"/>
+  <arg name="min_inspection_point_remaining" default="12.0"/>
+  <arg name="move_base_wait_timeout" default="90.0"/>
+  <arg name="move_base_retry_interval" default="2.0"/>
+  <arg name="detect_timeout" default="20.0"/>
+  <arg name="inspection_sequence" default="recognition"/>
+  <arg name="prepare_motion_host" default="true"/>
+  <arg name="motion_cmd_topic" default="/lite3_motion_cmd"/>
+  <arg name="motion_cmd_wait_timeout" default="5.0"/>
+  <arg name="motion_prepare_command" default="prepare_navigation"/>
+  <arg name="motion_prepare_wait" default="1.0"/>
+  <arg name="pre_detect_motion_command" default="inspection_view_pose"/>
+  <arg name="post_detect_motion_command" default="navigation_view_pose"/>
+  <arg name="detect_motion_wait" default="0.5"/>
+  <arg name="detect_pose_settle" default="1.0"/>
+  <arg name="post_detect_hold" default="4.0"/>
+  <arg name="detect_trigger_topic" default="/meter_inspect_trigger"/>
+  <arg name="detect_result_topic" default="/meter_status"/>
+  <arg name="detect_ready_topic" default="/meter_inspection_ready"/>
+  <arg name="detect_ready_timeout" default="120.0"/>
+  <arg name="detect_start_command" default="{goal}"/>
+  <arg name="detect_trigger_wait_timeout" default="5.0"/>
+  <arg name="manage_color_stream" default="false"/>
+  <arg name="color_stream_required" default="true"/>
+  <arg name="color_disable_after_detection" default="true"/>
+  <arg name="color_dynamic_reconfigure_node" default="/camera/realsense2_camera"/>
+  <arg name="color_enable_param" default="enable_color"/>
+  <arg name="color_image_topic" default="/camera/color/image_raw"/>
+  <arg name="color_stream_wait_timeout" default="8.0"/>
+
+  <node pkg="allmovebase"
+        type="sequential_nav_inspect.py"
+        name="sequential_nav_inspect"
+        output="screen">
+    <param name="goals_yaml" value="$(arg goals_yaml)"/>
+    <param name="frame_id" value="$(arg frame_id)"/>
+    <param name="nav_timeout" value="$(arg nav_timeout)"/>
+    <param name="task_budget_enable" value="$(arg task_budget_enable)"/>
+    <param name="task_budget_total" value="$(arg task_budget_total)"/>
+    <param name="task_budget_reserve" value="$(arg task_budget_reserve)"/>
+    <param name="min_inspection_point_remaining" value="$(arg min_inspection_point_remaining)"/>
+    <param name="move_base_wait_timeout" value="$(arg move_base_wait_timeout)"/>
+    <param name="move_base_retry_interval" value="$(arg move_base_retry_interval)"/>
+    <param name="detect_timeout" value="$(arg detect_timeout)"/>
+    <param name="inspection_sequence" value="$(arg inspection_sequence)"/>
+    <param name="prepare_motion_host" value="$(arg prepare_motion_host)"/>
+    <param name="motion_cmd_topic" value="$(arg motion_cmd_topic)"/>
+    <param name="motion_cmd_wait_timeout" value="$(arg motion_cmd_wait_timeout)"/>
+    <param name="motion_prepare_command" value="$(arg motion_prepare_command)"/>
+    <param name="motion_prepare_wait" value="$(arg motion_prepare_wait)"/>
+    <param name="pre_detect_motion_command" value="$(arg pre_detect_motion_command)"/>
+    <param name="post_detect_motion_command" value="$(arg post_detect_motion_command)"/>
+    <param name="detect_motion_wait" value="$(arg detect_motion_wait)"/>
+    <param name="detect_pose_settle" value="$(arg detect_pose_settle)"/>
+    <param name="post_detect_hold" value="$(arg post_detect_hold)"/>
+    <param name="detect_trigger_topic" value="$(arg detect_trigger_topic)"/>
+    <param name="detect_result_topic" value="$(arg detect_result_topic)"/>
+    <param name="detect_ready_topic" value="$(arg detect_ready_topic)"/>
+    <param name="detect_ready_timeout" value="$(arg detect_ready_timeout)"/>
+    <param name="detect_start_command" value="$(arg detect_start_command)"/>
+    <param name="detect_trigger_wait_timeout" value="$(arg detect_trigger_wait_timeout)"/>
+    <param name="manage_color_stream" value="$(arg manage_color_stream)"/>
+    <param name="color_stream_required" value="$(arg color_stream_required)"/>
+    <param name="color_disable_after_detection" value="$(arg color_disable_after_detection)"/>
+    <param name="color_dynamic_reconfigure_node" value="$(arg color_dynamic_reconfigure_node)"/>
+    <param name="color_enable_param" value="$(arg color_enable_param)"/>
+    <param name="color_image_topic" value="$(arg color_image_topic)"/>
+    <param name="color_stream_wait_timeout" value="$(arg color_stream_wait_timeout)"/>
+  </node>
+</launch>
