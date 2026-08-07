@@ -25,16 +25,26 @@ def read_simple_yaml(path):
     data = {}
     if not path or not os.path.exists(path):
         return data
-    with open(path, "r", encoding="utf-8") as f:
-        for raw_line in f:
-            line = raw_line.split("#", 1)[0].strip()
-            if not line or ":" not in line:
-                continue
-            key, value = line.split(":", 1)
-            value = value.strip()
-            if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
-                value = value[1:-1]
-            data[key.strip()] = value
+    with open(path, "rb") as f:
+        raw = f.read()
+    text = None
+    for encoding in ("utf-8-sig", "gb18030"):
+        try:
+            text = raw.decode(encoding)
+            break
+        except UnicodeDecodeError:
+            continue
+    if text is None:
+        raise ValueError("unsupported private config encoding: %s" % path)
+    for raw_line in text.splitlines():
+        line = raw_line.split("#", 1)[0].strip()
+        if not line or ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        value = value.strip()
+        if (value.startswith('"') and value.endswith('"')) or (value.startswith("'") and value.endswith("'")):
+            value = value[1:-1]
+        data[key.strip()] = value
     return data
 
 
@@ -45,7 +55,6 @@ def apply_private_config(args):
     args.motion_host = config.get("motion_host", args.motion_host)
     args.motion_host_p2p = config.get("motion_host_p2p", args.motion_host_p2p)
     args.handheld_ip = config.get("handheld_ip", args.handheld_ip)
-    args.tablet_ip = config.get("tablet_ip", args.tablet_ip)
     args.ssh_user = config.get("motion_host_ssh_user", config.get("ssh_user", args.ssh_user))
     args.ssh_password = config.get("motion_host_ssh_password", config.get("ssh_password", args.ssh_password))
     args.sudo_password = config.get("motion_host_sudo_password", config.get("sudo_password", args.sudo_password))
@@ -345,7 +354,6 @@ def parse_args():
     parser.add_argument("--motion-host", default="192.168.1.120")
     parser.add_argument("--motion-host-p2p", default="192.168.2.1")
     parser.add_argument("--handheld-ip", default="")
-    parser.add_argument("--tablet-ip", default="")
     parser.add_argument(
         "--filter-host",
         action="append",

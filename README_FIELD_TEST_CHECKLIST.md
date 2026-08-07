@@ -14,20 +14,23 @@ README_NETWORK_TOPOLOGY.md
 日期：
 场地：
 测试人员：
-机器狗热点网段 IP：
-开发机 WiFi/热点名：jj6
-感知主机 wlan0：连接 jj6，192.168.137.144/24，默认路由
-感知主机 wlan1：连接机器狗 AP，192.168.2.213/24，ipv4.never-default=yes
-机器狗对外 WiFi/AP 名：YSC-JYML-gb9zfq-5G
+开发路由器/WiFi：Bad_Puppy
+开发路由器网关：192.168.31.1
+感知主机 wlan0：192.168.31.174/24，DHCP 当前地址，默认路由
+感知主机 wlan0 MAC：00:7D:0E:02:AF:21
+感知主机 wlan1：192.168.2.213/24，连接机器狗 AP，ipv4.never-default=yes
+感知主机 wlan1 MAC：6C:1F:F7:88:0C:02
+机器狗对外 WiFi/AP 名：YSC-JYML-dt3tfa-5G
 感知主机内部 IP：192.168.1.103
 运动主机内部 IP：192.168.1.120
 运动主机热点网段别名：192.168.137.120
 运动主机 p2p0/AP 地址：192.168.2.1
-掌机 IP：192.168.2.62
-平板 IP：192.168.2.16
+掌机 IP：192.168.2.65
 git commit：
 主要目标：
 ```
+
+注意：`192.168.31.174` 是当前 DHCP 租约，不是固定地址。每次现场测试先通过路由器客户端列表或 `ip -br -4 addr show wlan0` 复核。
 
 ## 1. 代码与环境
 
@@ -60,12 +63,16 @@ nano private_robot_access.yaml
 至少确认：
 
 ```text
-robot_hotspot_ip: 192.168.137.144
-developer_wifi_ssid: jj6
-perception_wifi_adapter: 8188ETV
-robot_wifi_ssid: YSC-JYML-gb9zfq-5G
+robot_hotspot_ip: 192.168.31.174（当前 DHCP 地址）
+developer_wifi_ssid: Bad_Puppy
+perception_management_interface: wlan0
+perception_wifi_adapter: RTL8188ETV，driver=r8188eu
+perception_management_mac: 00:7D:0E:02:AF:21
+robot_wifi_ssid: YSC-JYML-dt3tfa-5G
 perception_robot_ap_interface: wlan1
 perception_robot_ap_ip: 192.168.2.213
+perception_robot_ap_adapter: USB ID 368b:8d85，具体型号未确认，driver=usb
+perception_robot_ap_mac: 6C:1F:F7:88:0C:02
 perception_host: 192.168.1.103
 motion_host: 192.168.1.120
 motion_host_hotspot_alias: 192.168.137.120
@@ -75,8 +82,7 @@ motion_host_ssh_password: 已填写/未填写
 sshpass: true/false
 sudo: false
 sudo_with_password: false
-handheld_ip: 192.168.2.62
-tablet_ip: 192.168.2.16
+handheld_ip: 192.168.2.65
 ```
 
 ## 3. 上机前预检
@@ -98,27 +104,35 @@ Docker：
 异常：
 ```
 
-如果感知主机没有连上开发机 WiFi/热点，先用平板连接机器狗内部网络后登录感知主机：
+如果感知主机没有连上 `Bad_Puppy`，但电脑能够连接机器狗 AP，可通过运动主机跳板登录感知主机：
 
 ```bash
-ssh ysc@192.168.1.103
-sudo systemctl restart NetworkManager
+ssh -J ysc@192.168.2.1 ysc@192.168.1.103
 ```
+
+不要在没有物理控制台或其他备用入口时远程重启 NetworkManager。
 
 记录：
 
 ```text
-是否需要重启 NetworkManager：
-重启后 192.168.137.144 是否恢复：
+是否能通过 Bad_Puppy 直接 SSH：
+wlan0 当前 DHCP 地址：
+是否需要使用运动主机跳板：
 ```
 
-检查第二 WiFi 链路是否正常接入机器狗 AP，且不抢默认路由：
+检查两块 WiFi 是否分别连接正确网络，并确认 `wlan1` 不产生默认路由：
 
 ```bash
 nmcli dev status
-ip addr
+ip -br -4 addr
 ip route
-nmcli connection show "YSC-JYML-gb9zfq-5G" | grep -E "autoconnect|interface-name|never-default|route-metric|method"
+nmcli connection show "Bad_Puppy" | grep -E "autoconnect|interface-name|never-default|route-metric|method"
+nmcli connection show "YSC-JYML-dt3tfa-5G" | grep -E "autoconnect|interface-name|never-default|route-metric|method"
+ip route get 1.1.1.1
+ip route get 192.168.2.1
+ip route get 192.168.1.120
+ping -c 4 1.1.1.1
+getent hosts github.com
 ping -c 4 192.168.2.1
 ping -c 4 192.168.1.120
 ```
@@ -126,10 +140,16 @@ ping -c 4 192.168.1.120
 记录：
 
 ```text
-wlan1 是否连接 YSC-JYML-gb9zfq-5G：
+wlan0 是否连接 Bad_Puppy：
+wlan0 当前 DHCP 地址：
+wlan0 是否承担唯一默认路由：
+wlan1 是否连接 YSC-JYML-dt3tfa-5G：
 wlan1 IP 是否为 192.168.2.x：
-默认路由是否仍为 wlan0/jj6：
+wlan1 ipv4.never-default 是否为 yes：
+wlan1 是否未产生默认路由：
+Internet/DNS：
 192.168.2.1 ping：
+192.168.1.120 ping：
 ```
 
 ## 4. 基础链路启动
@@ -220,8 +240,10 @@ python3 ros_nav_debug_stream.py --port 8082
 开发机浏览器打开：
 
 ```text
-http://192.168.137.144:8082
+http://192.168.31.174:8082
 ```
+
+`192.168.31.174` 是当前 DHCP 地址，访问失败时先执行 `ip -br -4 addr show wlan0` 复核。
 
 完整 RViz 诊断：
 
@@ -308,7 +330,7 @@ python3 motion_host_packet_capture.py capture --all-ports --duration 30
 python3 motion_host_packet_capture.py remote-capture \
   --interface p2p0 \
   --filter-host 192.168.2.1 \
-  --host 192.168.2.62 \
+  --host 192.168.2.65 \
   --all-ports \
   --duration 30
 ```
@@ -330,8 +352,7 @@ python3 motion_host_packet_capture.py decode --pcap ~/packet_captures/<pcap文�
 
 ```text
 pcap 文件：
-掌机 IP：
-平板 IP：
+掌机 IP：192.168.2.65
 可疑端口：
 是否出现 JoystickChannelFrame：
 是否出现 SimpleCMD/ComplexCMD：
@@ -416,4 +437,3 @@ src/tools/private_robot_access.yaml
 *.pcap
 runtime 样本图
 ```
-

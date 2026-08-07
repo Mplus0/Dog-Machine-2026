@@ -95,35 +95,33 @@ ping 192.168.1.120
 当前开发/实机网络结构记录：
 
 ```text
-开发机上网：学校 WiFi / Internet
-开发机 WiFi/热点名：jj6
-机器狗连接开发机热点：感知主机 wlan0 开机自连 jj6，开发机可见机器狗 IP 约为 192.168.137.144
+开发机和感知主机连接开发路由器/WiFi Bad_Puppy
+开发路由器网关：192.168.31.1
+感知主机 wlan0：192.168.31.174/24，DHCP 当前地址，负责 SSH、Git、Internet 和默认路由
 机器狗内部网络：
   感知主机：192.168.1.103
-  感知主机 wlan1：192.168.2.213，连接 YSC-JYML-gb9zfq-5G，仅访问 192.168.2.0/24
+  感知主机 wlan1：192.168.2.213，连接 YSC-JYML-dt3tfa-5G，仅访问 192.168.2.0/24
   运动主机：192.168.1.120
   运动主机热点网段别名：192.168.137.120
   运动主机 p2p0/AP 地址：192.168.2.1
-  运动主机对外 WiFi/AP 名：YSC-JYML-gb9zfq-5G
-  掌机：192.168.2.62
-  平板：192.168.2.16
-注意：感知主机 wlan1 配置为 ipv4.never-default yes，默认路由仍应走 wlan0/jj6。
+  运动主机对外 WiFi/AP 名：YSC-JYML-dt3tfa-5G
+  掌机：192.168.2.65
+注意：感知主机 wlan1 配置为 ipv4.never-default yes、ipv6.never-default yes，默认路由只走 wlan0/Bad_Puppy。
 SSH 用户名：
   感知主机：ysc
   运动主机：ysc
 SSH 密码：设备出厂默认密码，本文不记录明文
 ```
 
-建议把工具优先放在感知主机上运行。开发机访问网页调试工具、D435i 预览、rosbag 文件时，通常访问热点网段的机器狗 IP；感知主机访问运动主机、抓运动主机通信时，使用内部网段 `192.168.1.x`。
+建议把工具优先放在感知主机上运行。开发机访问网页调试工具、D435i 预览和 rosbag 文件时，使用感知主机 `wlan0` 当前 DHCP 地址；感知主机访问运动主机时使用内部网段 `192.168.1.x`。
 
-如果感知主机没有自动连上开发机 WiFi/热点，可用平板连接机器狗内部网络后登录感知主机内部地址：
+如果 `Bad_Puppy` 管理网络不可用，但电脑能够连接机器狗 AP，可通过运动主机跳板登录感知主机：
 
 ```bash
-ssh ysc@192.168.1.103
-sudo systemctl restart NetworkManager
+ssh -J ysc@192.168.2.1 ysc@192.168.1.103
 ```
 
-该操作会短暂重置感知主机网络，只在 WiFi 自连异常时使用。
+不要在没有物理控制台或其他备用入口时远程重启 NetworkManager。
 
 私有连接信息不写入文档正文，使用本地配置文件管理：
 
@@ -863,11 +861,10 @@ src/message_transformer/docs/LITE3_MOTION_CMD.md
 
 如果需要研究掌机和代码控制的差异，优先使用被动抓包，不要直接在运动主机上改配置或主动发未知包。当前工程默认运动主机地址为 `192.168.1.120`，开发者 UDP 控制目标端口为 `43893`，状态回传常见端口为 `43897`，掌机/APP 相关端口为 `43899`，广角 RTSP 为 `8554`。
 
-实测网络中，掌机和平板不在 `192.168.1.x`，而是在运动主机 `p2p0=192.168.2.1/24` 下：
+实测掌机链路位于运动主机 `p2p0=192.168.2.1/24` 下：
 
 ```text
-掌机：192.168.2.62
-平板：192.168.2.16
+掌机：192.168.2.65
 ```
 
 注意：这些是工程和厂家文档中已知端口，不代表已经确认掌机与运动主机直连通讯端口。若要发现未知端口，先只按 IP 抓全端口：
@@ -882,7 +879,7 @@ python3 motion_host_packet_capture.py capture --all-ports --duration 30
 ```bash
 python3 motion_host_packet_capture.py capture \
   --all-ports \
-  --host 192.168.2.62 \
+  --host 192.168.2.65 \
   --duration 30
 ```
 
@@ -892,10 +889,10 @@ python3 motion_host_packet_capture.py capture \
 python3 motion_host_packet_capture.py remote-capture \
   --interface p2p0 \
   --filter-host 192.168.2.1 \
-  --host 192.168.2.62 \
+  --host 192.168.2.65 \
   --all-ports \
   --duration 60 \
-  --output ~/packet_captures/handheld_192_168_2_62.pcap
+  --output ~/packet_captures/handheld_192_168_2_65.pcap
 ```
 
 在感知主机上抓 60 秒：
@@ -1265,5 +1262,3 @@ src/dog_motion/runtime/meter_samples/
 README_NETWORK_TOPOLOGY.md
 README_FIELD_TEST_CHECKLIST.md
 ```
-
-

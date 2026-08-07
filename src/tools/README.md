@@ -11,22 +11,20 @@ cd ~/comp2026_ws/src/tools
 当前网络结构记录：
 
 ```text
-开发机热点网段机器狗 IP：192.168.137.144
-开发机 WiFi/热点名：jj6
-感知主机 wlan0：连接 jj6，192.168.137.144/24，默认路由
+开发路由器/WiFi：Bad_Puppy，网关 192.168.31.1
+感知主机 wlan0：连接 Bad_Puppy，当前 DHCP 地址 192.168.31.174/24，默认路由
 感知主机 wlan1：连接机器狗 AP，192.168.2.213/24，ipv4.never-default=yes
-机器狗对外 WiFi/AP 名：YSC-JYML-gb9zfq-5G
+机器狗对外 WiFi/AP 名：YSC-JYML-dt3tfa-5G
 机器狗内部感知主机 IP：192.168.1.103
 机器狗内部运动主机 IP：192.168.1.120
 运动主机热点网段别名：192.168.137.120
 运动主机 p2p0/AP 地址：192.168.2.1
-掌机 IP：192.168.2.62
-平板 IP：192.168.2.16
+掌机 IP：192.168.2.65
 感知主机/运动主机 SSH 用户名：ysc
 感知主机/运动主机 SSH 密码：设备出厂默认密码，本文不记录明文
 ```
 
-本目录工具默认假设在感知主机上运行。浏览器访问网页工具时，开发机通常使用 `http://192.168.137.144:<port>`；感知主机访问运动主机时使用 `192.168.1.120`。
+本目录工具默认假设在感知主机上运行。浏览器访问网页工具时，开发机使用 `http://192.168.31.174:<port>`；该地址是当前 DHCP 租约，变化时先查询 `wlan0`。感知主机访问运动主机时使用 `192.168.1.120`。
 
 私有连接信息使用本地配置文件：
 
@@ -35,13 +33,23 @@ private_robot_access.example.yaml  # 仓库模板
 private_robot_access.yaml          # 本地真实配置，已写入 .gitignore
 ```
 
-下次上机时在感知主机上按模板填写：
+当前工作区内的 `private_robot_access.yaml` 已整理为可复制到感知主机的最小运行配置，密码为空。该文件被 Git 忽略，因此必须通过 `scp`、U 盘等方式单独复制，不能依赖 `git pull`。
+
+如果只通过 Git 同步仓库，则在感知主机上从模板生成运行配置：
+
+```bash
+cd ~/comp2026_ws/src/tools
+cp private_robot_access.example.yaml private_robot_access.yaml
+chmod 600 private_robot_access.yaml
+```
+
+配置沿用原文件字段，只修改当前网络中已经确认的值：
 
 ```yaml
-robot_hotspot_ip: 192.168.137.144
-developer_wifi_ssid: jj6
+robot_hotspot_ip: 192.168.31.174
+developer_wifi_ssid: Bad_Puppy
 perception_wifi_adapter: 8188ETV
-robot_wifi_ssid: YSC-JYML-gb9zfq-5G
+robot_wifi_ssid: YSC-JYML-dt3tfa-5G
 perception_robot_ap_interface: wlan1
 perception_robot_ap_ip: 192.168.2.213
 perception_host: 192.168.1.103
@@ -49,32 +57,33 @@ motion_host: 192.168.1.120
 motion_host_hotspot_alias: 192.168.137.120
 motion_host_p2p: 192.168.2.1
 perception_host_ssh_user: ysc
-perception_host_ssh_password: "<填真实密码>"
+perception_host_ssh_password: ""
 motion_host_ssh_user: ysc
-motion_host_ssh_password: "<填真实密码>"
+motion_host_ssh_password: ""
 motion_host_sudo_password: ""
 sudo_password_same_as_ssh: true
-sshpass: true
+sshpass: false
 sudo: false
 sudo_with_password: false
-handheld_ip: 192.168.2.62
-tablet_ip: 192.168.2.16
+handheld_ip: 192.168.2.65
+tablet_ip: ""
 ```
 
-`motion_host_packet_capture.py` 默认读取 `private_robot_access.yaml`。若启用 `sshpass: true`，密码通过 `SSHPASS` 环境变量传给 `sshpass -e`，不会打印在命令行里。依赖：
+`motion_host_packet_capture.py` 默认读取 `private_robot_access.yaml`。默认的 `sshpass: false` 会使用普通 SSH，可交互输入密码，也可使用 SSH 密钥，不需要把密码写进文件。
+
+只有确实需要无人值守密码登录时，才填写 `motion_host_ssh_password` 并改为 `sshpass: true`。此模式下密码通过 `SSHPASS` 环境变量传给 `sshpass -e`，不会打印在命令行里。依赖：
 
 ```bash
 sudo apt install sshpass
 ```
 
-如果感知主机 8188ETV 网卡没有自动连接开发机 WiFi/热点，可用平板连接机器狗内部网络后登录 `192.168.1.103`，再重启 NetworkManager：
+如果感知主机没有自动连接 `Bad_Puppy`，但电脑能够连接机器狗 AP，可通过运动主机跳板登录：
 
 ```bash
-ssh ysc@192.168.1.103
-sudo systemctl restart NetworkManager
+ssh -J ysc@192.168.2.1 ysc@192.168.1.103
 ```
 
-该操作会短暂重置感知主机网络，只在 WiFi 自连异常时使用。
+不要在没有物理控制台或其他备用入口时远程重启 NetworkManager。
 
 ## 工具总览
 
@@ -323,8 +332,7 @@ python3 preflight.py --strict
 实测掌机链路在运动主机 `p2p0=192.168.2.1/24` 下：
 
 ```text
-掌机：192.168.2.62
-平板：192.168.2.16
+掌机：192.168.2.65
 ```
 
 这些端口来自今年工程和厂家通信文档，不代表已经确认掌机与运动主机直连通讯端口。如果要发现未知端口，先只按运动主机 IP 抓全端口：
@@ -338,7 +346,7 @@ python3 motion_host_packet_capture.py capture --all-ports --duration 30
 ```bash
 python3 motion_host_packet_capture.py capture \
   --all-ports \
-  --host 192.168.2.62 \
+  --host 192.168.2.65 \
   --duration 30
 ```
 
@@ -348,10 +356,10 @@ python3 motion_host_packet_capture.py capture \
 python3 motion_host_packet_capture.py remote-capture \
   --interface p2p0 \
   --filter-host 192.168.2.1 \
-  --host 192.168.2.62 \
+  --host 192.168.2.65 \
   --all-ports \
   --duration 60 \
-  --output ~/packet_captures/handheld_192_168_2_62.pcap
+  --output ~/packet_captures/handheld_192_168_2_65.pcap
 ```
 
 在感知主机上抓取和运动主机相关的默认端口，持续 60 秒：
