@@ -95,18 +95,18 @@ ping 192.168.1.120
 当前开发/实机网络结构记录：
 
 ```text
-开发机和感知主机连接开发 WiFi/手机热点 iPhone-hotspot
-手机热点网关：172.20.10.1
-感知主机 wlan0：172.20.10.2/28，DHCP 当前地址，负责 SSH、Git、Internet 和默认路由
+开发机和感知主机连接开发路由器/WiFi Bad_Puppy
+开发路由器网关：192.168.31.1
+感知主机 wlan0：192.168.31.174/24，DHCP 当前地址，负责 SSH、Git、Internet 和默认路由
 机器狗内部网络：
   感知主机：192.168.1.103
-  感知主机 wlan1：192.168.2.213，连接 YSC-JYML-dt3tfa-5G，仅访问 192.168.2.0/24
+  感知主机 wlan1：192.168.2.214，连接 YSC-JYML-dt3tfa-5G，仅访问 192.168.2.0/24
   运动主机：192.168.1.120
   运动主机热点网段别名：192.168.137.120
   运动主机 p2p0/AP 地址：192.168.2.1
   运动主机对外 WiFi/AP 名：YSC-JYML-dt3tfa-5G
   掌机：192.168.2.65
-注意：感知主机 wlan1 配置为 ipv4.never-default yes、ipv6.never-default yes，默认路由只走 wlan0/iPhone-hotspot。
+注意：感知主机 wlan1 配置为 ipv4.never-default yes、ipv6.never-default yes，默认路由只走 wlan0/Bad_Puppy。
 SSH 用户名：
   感知主机：ysc
   运动主机：ysc
@@ -115,7 +115,7 @@ SSH 密码：设备出厂默认密码，本文不记录明文
 
 建议把工具优先放在感知主机上运行。开发机访问网页调试工具、D435i 预览和 rosbag 文件时，使用感知主机 `wlan0` 当前 DHCP 地址；感知主机访问运动主机时使用内部网段 `192.168.1.x`。
 
-如果 `iPhone-hotspot` 管理网络不可用，但电脑能够连接机器狗 AP，可通过运动主机跳板登录感知主机：
+如果 `Bad_Puppy` 管理网络不可用，但电脑能够连接机器狗 AP，可通过运动主机跳板登录感知主机：
 
 ```bash
 ssh -J ysc@192.168.2.1 ysc@192.168.1.103

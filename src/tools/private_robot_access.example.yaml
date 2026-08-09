@@ -1,12 +1,12 @@
 # Copy this file to private_robot_access.yaml on each machine and fill local secrets there.
 # private_robot_access.yaml is ignored by git.
 
-robot_hotspot_ip: 172.20.10.2
-developer_wifi_ssid: iPhone-hotspot
+robot_hotspot_ip: 192.168.31.174
+developer_wifi_ssid: Bad_Puppy
 perception_wifi_adapter: 368b:8d85
 robot_wifi_ssid: YSC-JYML-dt3tfa-5G
 perception_robot_ap_interface: wlan1
-perception_robot_ap_ip: 192.168.2.213
+perception_robot_ap_ip: 192.168.2.214
 perception_host: 192.168.1.103
 motion_host: 192.168.1.120
 motion_host_hotspot_alias: 192.168.137.120

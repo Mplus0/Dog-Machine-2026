@@ -16,10 +16,10 @@ README_NETWORK_TOPOLOGY.md
 ROS：Noetic
 工程路径：~/comp2026_ws
 开发同步方式：开发机与机器狗通过 git 拉取同步
-管理 WiFi 网卡：wlan0，USB ID 368b:8d85，具体型号未确认，driver=usb，连接 iPhone-hotspot
-管理 WiFi 当前地址：172.20.10.2/28，由 DHCP 分配，负责 SSH、Git、Internet 和默认路由
+管理 WiFi 网卡：wlan0，USB ID 368b:8d85，具体型号未确认，driver=usb，连接 Bad_Puppy
+管理 WiFi 当前地址：192.168.31.174/24，由 DHCP 分配，负责 SSH、Git、Internet 和默认路由
 机器狗 AP 网卡：wlan1，USB ID 368b:8d85，具体型号未确认，driver=usb
-机器狗 AP 链路：wlan1 连接 `YSC-JYML-dt3tfa-5G`，当前地址 192.168.2.213/24，仅访问 192.168.2.0/24
+机器狗 AP 链路：wlan1 连接 `YSC-JYML-dt3tfa-5G`，当前地址 192.168.2.214/24，仅访问 192.168.2.0/24
 机器狗 AP 路由约束：ipv4.never-default=yes，ipv4.route-metric=700，ipv6.never-default=yes
 内部有线网：eth0=192.168.1.103/24，连接运动主机 192.168.1.120/24
 ```
