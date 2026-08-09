@@ -11,8 +11,8 @@ cd ~/comp2026_ws/src/tools
 当前网络结构记录：
 
 ```text
-开发路由器/WiFi：Bad_Puppy，网关 192.168.31.1
-感知主机 wlan0：连接 Bad_Puppy，当前 DHCP 地址 192.168.31.175/24，默认路由
+开发 WiFi/手机热点：iPhone-hotspot，网关 172.20.10.1
+感知主机 wlan0：连接 iPhone-hotspot，当前 DHCP 地址 172.20.10.2/28，默认路由
 感知主机 wlan1：连接机器狗 AP，192.168.2.213/24，ipv4.never-default=yes
 机器狗对外 WiFi/AP 名：YSC-JYML-dt3tfa-5G
 机器狗内部感知主机 IP：192.168.1.103
@@ -24,7 +24,7 @@ cd ~/comp2026_ws/src/tools
 感知主机/运动主机 SSH 密码：设备出厂默认密码，本文不记录明文
 ```
 
-本目录工具默认假设在感知主机上运行。浏览器访问网页工具时，开发机使用 `http://192.168.31.175:<port>`；该地址是当前 DHCP 租约，变化时先查询 `wlan0`。感知主机访问运动主机时使用 `192.168.1.120`。
+本目录工具默认假设在感知主机上运行。浏览器访问网页工具时，开发机使用 `http://172.20.10.2:<port>`；该地址是当前 DHCP 租约，变化时先查询 `wlan0`。感知主机访问运动主机时使用 `192.168.1.120`。
 
 私有连接信息使用本地配置文件：
 
@@ -46,9 +46,9 @@ chmod 600 private_robot_access.yaml
 配置沿用原文件字段，只修改当前网络中已经确认的值：
 
 ```yaml
-robot_hotspot_ip: 192.168.31.175
-developer_wifi_ssid: Bad_Puppy
-perception_wifi_adapter: 8188ETV
+robot_hotspot_ip: 172.20.10.2
+developer_wifi_ssid: iPhone-hotspot
+perception_wifi_adapter: 368b:8d85
 robot_wifi_ssid: YSC-JYML-dt3tfa-5G
 perception_robot_ap_interface: wlan1
 perception_robot_ap_ip: 192.168.2.213
@@ -77,7 +77,7 @@ tablet_ip: ""
 sudo apt install sshpass
 ```
 
-如果感知主机没有自动连接 `Bad_Puppy`，但电脑能够连接机器狗 AP，可通过运动主机跳板登录：
+如果感知主机没有自动连接 `iPhone-hotspot`，但电脑能够连接机器狗 AP，可通过运动主机跳板登录：
 
 ```bash
 ssh -J ysc@192.168.2.1 ysc@192.168.1.103

@@ -14,12 +14,12 @@ README_NETWORK_TOPOLOGY.md
 日期：
 场地：
 测试人员：
-开发路由器/WiFi：Bad_Puppy
-开发路由器网关：192.168.31.1
-感知主机 wlan0：192.168.31.175/24，DHCP 当前地址，默认路由
-感知主机 wlan0 MAC：00:7D:0E:02:AF:21
+开发 WiFi/手机热点：iPhone-hotspot
+手机热点网关：172.20.10.1
+感知主机 wlan0：172.20.10.2/28，DHCP 当前地址，默认路由
+感知主机 wlan0 MAC：6C:1F:F7:88:0C:02
 感知主机 wlan1：192.168.2.213/24，连接机器狗 AP，ipv4.never-default=yes
-感知主机 wlan1 MAC：6C:1F:F7:88:0C:02
+感知主机 wlan1 MAC：6C:1F:F7:F4:09:76
 机器狗对外 WiFi/AP 名：YSC-JYML-dt3tfa-5G
 感知主机内部 IP：192.168.1.103
 运动主机内部 IP：192.168.1.120
@@ -30,7 +30,7 @@ git commit：
 主要目标：
 ```
 
-注意：`192.168.31.175` 是当前 DHCP 租约，不是固定地址。每次现场测试先通过路由器客户端列表或 `ip -br -4 addr show wlan0` 复核。
+注意：`172.20.10.2` 是当前 DHCP 租约，不是固定地址。每次现场测试先通过手机热点客户端列表或 `ip -br -4 addr show wlan0` 复核。
 
 ## 1. 代码与环境
 
@@ -63,16 +63,16 @@ nano private_robot_access.yaml
 至少确认：
 
 ```text
-robot_hotspot_ip: 192.168.31.175（当前 DHCP 地址）
-developer_wifi_ssid: Bad_Puppy
+robot_hotspot_ip: 172.20.10.2（当前 DHCP 地址）
+developer_wifi_ssid: iPhone-hotspot
 perception_management_interface: wlan0
-perception_wifi_adapter: RTL8188ETV，driver=r8188eu
-perception_management_mac: 00:7D:0E:02:AF:21
+perception_wifi_adapter: USB ID 368b:8d85，具体型号未确认，driver=usb
+perception_management_mac: 6C:1F:F7:88:0C:02
 robot_wifi_ssid: YSC-JYML-dt3tfa-5G
 perception_robot_ap_interface: wlan1
 perception_robot_ap_ip: 192.168.2.213
 perception_robot_ap_adapter: USB ID 368b:8d85，具体型号未确认，driver=usb
-perception_robot_ap_mac: 6C:1F:F7:88:0C:02
+perception_robot_ap_mac: 6C:1F:F7:F4:09:76
 perception_host: 192.168.1.103
 motion_host: 192.168.1.120
 motion_host_hotspot_alias: 192.168.137.120
@@ -104,7 +104,7 @@ Docker：
 异常：
 ```
 
-如果感知主机没有连上 `Bad_Puppy`，但电脑能够连接机器狗 AP，可通过运动主机跳板登录感知主机：
+如果感知主机没有连上 `iPhone-hotspot`，但电脑能够连接机器狗 AP，可通过运动主机跳板登录感知主机：
 
 ```bash
 ssh -J ysc@192.168.2.1 ysc@192.168.1.103
@@ -115,7 +115,7 @@ ssh -J ysc@192.168.2.1 ysc@192.168.1.103
 记录：
 
 ```text
-是否能通过 Bad_Puppy 直接 SSH：
+是否能通过 iPhone-hotspot 直接 SSH：
 wlan0 当前 DHCP 地址：
 是否需要使用运动主机跳板：
 ```
@@ -126,7 +126,7 @@ wlan0 当前 DHCP 地址：
 nmcli dev status
 ip -br -4 addr
 ip route
-nmcli connection show "Bad_Puppy" | grep -E "autoconnect|interface-name|never-default|route-metric|method"
+nmcli connection show "iPhone-hotspot" | grep -E "autoconnect|interface-name|never-default|route-metric|method"
 nmcli connection show "YSC-JYML-dt3tfa-5G" | grep -E "autoconnect|interface-name|never-default|route-metric|method"
 ip route get 1.1.1.1
 ip route get 192.168.2.1
@@ -140,7 +140,7 @@ ping -c 4 192.168.1.120
 记录：
 
 ```text
-wlan0 是否连接 Bad_Puppy：
+wlan0 是否连接 iPhone-hotspot：
 wlan0 当前 DHCP 地址：
 wlan0 是否承担唯一默认路由：
 wlan1 是否连接 YSC-JYML-dt3tfa-5G：
@@ -240,10 +240,10 @@ python3 ros_nav_debug_stream.py --port 8082
 开发机浏览器打开：
 
 ```text
-http://192.168.31.175:8082
+http://172.20.10.2:8082
 ```
 
-`192.168.31.175` 是当前 DHCP 地址，访问失败时先执行 `ip -br -4 addr show wlan0` 复核。
+`172.20.10.2` 是当前 DHCP 地址，访问失败时先执行 `ip -br -4 addr show wlan0` 复核。
 
 完整 RViz 诊断：
 
