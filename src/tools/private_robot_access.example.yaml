@@ -1,7 +1,7 @@
 # Copy this file to private_robot_access.yaml on each machine and fill local secrets there.
 # private_robot_access.yaml is ignored by git.
 
-robot_hotspot_ip: 192.168.31.174
+robot_hotspot_ip: 192.168.31.175
 developer_wifi_ssid: Bad_Puppy
 perception_wifi_adapter: 8188ETV
 robot_wifi_ssid: YSC-JYML-dt3tfa-5G

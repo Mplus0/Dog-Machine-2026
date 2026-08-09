@@ -26,7 +26,7 @@ src/tools/private_robot_access.yaml
     | wlan0
     v
 感知主机 Jetson / Ubuntu 20.04 / ROS Noetic
-  wlan0: 192.168.31.174/24，DHCP
+  wlan0: 192.168.31.175/24，DHCP
   wlan0: 连接 Bad_Puppy，负责 SSH、Git、Internet 和默认路由
   eth0 : 192.168.1.103/24，机器狗内部有线网
   wlan1: 192.168.2.213/24，DHCP
@@ -53,7 +53,7 @@ src/tools/private_robot_access.yaml
 | ------------------------ | -------------------------- | ------------------------------------------------------- |
 | 开发路由器网关           | `192.168.31.1`             | 感知主机 `wlan0` 的默认路由网关                         |
 | 开发路由器/WiFi          | `Bad_Puppy`                | 开发机和感知主机管理网络                                |
-| 感知主机 `wlan0`         | `192.168.31.174/24`        | 当前 DHCP 地址，负责 SSH、Git、Internet 和默认路由      |
+| 感知主机 `wlan0`         | `192.168.31.175/24`        | 当前 DHCP 地址，负责 SSH、Git、Internet 和默认路由      |
 | 感知主机 `eth0`          | `192.168.1.103/24`         | 机器狗内部有线控制网                                    |
 | 感知主机 `wlan1`         | `192.168.2.213/24`         | 连接机器狗对外 WiFi/AP                                  |
 | 运动主机 `eth1`          | `192.168.1.120/24`         | 感知主机访问运动主机的主要地址                          |
@@ -81,10 +81,10 @@ ysc
 开发机连接 `Bad_Puppy` 后，使用感知主机 `wlan0` 当前 DHCP 地址登录：
 
 ```bash
-ssh ysc@192.168.31.174
+ssh ysc@192.168.31.175
 ```
 
-`192.168.31.174` 是当前 DHCP 租约。地址变化时，先在路由器客户端列表中查询，或在感知主机执行：
+`192.168.31.175` 是当前 DHCP 租约。地址变化时，先在路由器客户端列表中查询，或在感知主机执行：
 
 ```bash
 ip -br -4 addr show wlan0
@@ -114,13 +114,13 @@ ssh -J ysc@192.168.2.1 ysc@192.168.1.103
 
 ```text
 eth0 : 192.168.1.103/24
-wlan0: 192.168.31.174/24
+wlan0: 192.168.31.175/24
 wlan1: 192.168.2.213/24
 
 default via 192.168.31.1 dev wlan0 proto dhcp metric 600
 192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.103 metric 100
 192.168.2.0/24 dev wlan1 proto kernel scope link src 192.168.2.213 metric 700
-192.168.31.0/24 dev wlan0 proto kernel scope link src 192.168.31.174 metric 600
+192.168.31.0/24 dev wlan0 proto kernel scope link src 192.168.31.175 metric 600
 ```
 
 含义：
@@ -136,7 +136,7 @@ default via 192.168.31.1 dev wlan0 proto dhcp metric 600
 
 ```text
 wlan0 -> Bad_Puppy
-  IP: 192.168.31.174/24（DHCP 当前租约）
+  IP: 192.168.31.175/24（DHCP 当前租约）
   gateway: 192.168.31.1
   connection.autoconnect: yes
   ipv4.method: auto
@@ -259,12 +259,12 @@ python3 motion_host_packet_capture.py remote-capture \
 工具在感知主机运行时，开发机连接 `Bad_Puppy` 后，使用感知主机 `wlan0` 当前 DHCP 地址访问：
 
 ```text
-D435i 彩色预览:       http://192.168.31.174:8080
-广角相机预览:         http://192.168.31.174:8081
-ROS 导航调试看板:     http://192.168.31.174:8082
+D435i 彩色预览:       http://192.168.31.175:8080
+广角相机预览:         http://192.168.31.175:8081
+ROS 导航调试看板:     http://192.168.31.175:8082
 ```
 
-`192.168.31.174` 是当前 DHCP 租约，不是固定地址。无法访问时，先在感知主机执行：
+`192.168.31.175` 是当前 DHCP 租约，不是固定地址。无法访问时，先在感知主机执行：
 
 ```bash
 ip -br -4 addr show wlan0

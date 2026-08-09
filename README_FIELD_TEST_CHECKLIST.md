@@ -16,7 +16,7 @@ README_NETWORK_TOPOLOGY.md
 测试人员：
 开发路由器/WiFi：Bad_Puppy
 开发路由器网关：192.168.31.1
-感知主机 wlan0：192.168.31.174/24，DHCP 当前地址，默认路由
+感知主机 wlan0：192.168.31.175/24，DHCP 当前地址，默认路由
 感知主机 wlan0 MAC：00:7D:0E:02:AF:21
 感知主机 wlan1：192.168.2.213/24，连接机器狗 AP，ipv4.never-default=yes
 感知主机 wlan1 MAC：6C:1F:F7:88:0C:02
@@ -30,7 +30,7 @@ git commit：
 主要目标：
 ```
 
-注意：`192.168.31.174` 是当前 DHCP 租约，不是固定地址。每次现场测试先通过路由器客户端列表或 `ip -br -4 addr show wlan0` 复核。
+注意：`192.168.31.175` 是当前 DHCP 租约，不是固定地址。每次现场测试先通过路由器客户端列表或 `ip -br -4 addr show wlan0` 复核。
 
 ## 1. 代码与环境
 
@@ -63,7 +63,7 @@ nano private_robot_access.yaml
 至少确认：
 
 ```text
-robot_hotspot_ip: 192.168.31.174（当前 DHCP 地址）
+robot_hotspot_ip: 192.168.31.175（当前 DHCP 地址）
 developer_wifi_ssid: Bad_Puppy
 perception_management_interface: wlan0
 perception_wifi_adapter: RTL8188ETV，driver=r8188eu
@@ -240,10 +240,10 @@ python3 ros_nav_debug_stream.py --port 8082
 开发机浏览器打开：
 
 ```text
-http://192.168.31.174:8082
+http://192.168.31.175:8082
 ```
 
-`192.168.31.174` 是当前 DHCP 地址，访问失败时先执行 `ip -br -4 addr show wlan0` 复核。
+`192.168.31.175` 是当前 DHCP 地址，访问失败时先执行 `ip -br -4 addr show wlan0` 复核。
 
 完整 RViz 诊断：
 
