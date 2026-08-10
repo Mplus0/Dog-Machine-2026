@@ -16,7 +16,7 @@ src/tools/private_robot_access.yaml
 
 当前感知主机配置了两块独立无线网卡，并保留与运动主机连接的内部有线网络。
 
-`wlan0` 当前地址由开发路由器 DHCP 分配，可能随网卡、租约或路由器配置发生变化。本文记录的是当前实测地址，不代表固定静态地址。
+`wlan0` 开发网地址当前固定为 `192.168.31.192/24`。无论由主机静态配置还是路由器 DHCP 绑定实现，开发机和远程 RViz 均按此地址连接。
 
 ```text
 开发路由器 / Internet
@@ -26,10 +26,10 @@ src/tools/private_robot_access.yaml
     | wlan0
     v
 感知主机 Jetson / Ubuntu 20.04 / ROS Noetic
-  wlan0: 192.168.31.174/24，DHCP
+  wlan0: 192.168.31.192/24，固定地址
   wlan0: 连接 Bad_Puppy，负责 SSH、Git、Internet 和默认路由
   eth0 : 192.168.1.103/24，机器狗内部有线网
-  wlan1: 192.168.2.214/24，DHCP
+  wlan1: 192.168.2.92/24，DHCP
   wlan1: 连接机器狗对外 WiFi/AP YSC-JYML-dt3tfa-5G
     |
     | eth0 <-> eth1
@@ -43,7 +43,7 @@ src/tools/private_robot_access.yaml
     | p2p0/AP
     v
 掌机及感知主机 wlan1
-  感知主机 wlan1: 192.168.2.214
+  感知主机 wlan1: 192.168.2.92
   掌机: 192.168.2.65
 ```
 
@@ -53,9 +53,9 @@ src/tools/private_robot_access.yaml
 | ------------------------ | -------------------------- | ------------------------------------------------------- |
 | 开发路由器网关           | `192.168.31.1`             | 感知主机 `wlan0` 的默认路由网关                         |
 | 开发路由器/WiFi          | `Bad_Puppy`                | 开发机和感知主机管理网络                                |
-| 感知主机 `wlan0`         | `192.168.31.174/24`        | 当前 DHCP 地址，负责 SSH、Git、Internet 和默认路由      |
+| 感知主机 `wlan0`         | `192.168.31.192/24`        | 固定地址，负责 SSH、Git、Internet 和默认路由           |
 | 感知主机 `eth0`          | `192.168.1.103/24`         | 机器狗内部有线控制网                                    |
-| 感知主机 `wlan1`         | `192.168.2.214/24`         | 连接机器狗对外 WiFi/AP                                  |
+| 感知主机 `wlan1`         | `192.168.2.92/24`          | 连接机器狗对外 WiFi/AP                                  |
 | 运动主机 `eth1`          | `192.168.1.120/24`         | 感知主机访问运动主机的主要地址                          |
 | 运动主机 `eth1` 第二地址 | `192.168.137.120/24`       | 当前实测仍存在，与 `192.168.1.120` 位于同一物理接口     |
 | 运动主机 `p2p0`          | `192.168.2.1/24`           | 机器狗对外 AP/P2P 网关                                  |
@@ -78,13 +78,13 @@ ysc
 
 当前感知主机和运动主机的 SSH 用户名/密码相同。sudo 密码与 SSH 登录密码相同。
 
-开发机连接 `Bad_Puppy` 后，使用感知主机 `wlan0` 当前 DHCP 地址登录：
+开发机连接 `Bad_Puppy` 后，使用感知主机 `wlan0` 固定地址登录：
 
 ```bash
-ssh ysc@192.168.31.174
+ssh ysc@192.168.31.192
 ```
 
-`192.168.31.174` 是当前 DHCP 租约。地址变化时，先在路由器客户端列表中查询，或在感知主机执行：
+`192.168.31.192` 是当前固定地址。连接异常时，在感知主机执行：
 
 ```bash
 ip -br -4 addr show wlan0
@@ -114,13 +114,13 @@ ssh -J ysc@192.168.2.1 ysc@192.168.1.103
 
 ```text
 eth0 : 192.168.1.103/24
-wlan0: 192.168.31.174/24
-wlan1: 192.168.2.214/24
+wlan0: 192.168.31.192/24
+wlan1: 192.168.2.92/24
 
 default via 192.168.31.1 dev wlan0 proto dhcp metric 600
 192.168.1.0/24 dev eth0 proto kernel scope link src 192.168.1.103 metric 100
-192.168.2.0/24 dev wlan1 proto kernel scope link src 192.168.2.214 metric 700
-192.168.31.0/24 dev wlan0 proto kernel scope link src 192.168.31.174 metric 600
+192.168.2.0/24 dev wlan1 proto kernel scope link src 192.168.2.92 metric 700
+192.168.31.0/24 dev wlan0 proto kernel scope link src 192.168.31.192 metric 600
 ```
 
 含义：
@@ -136,7 +136,7 @@ default via 192.168.31.1 dev wlan0 proto dhcp metric 600
 
 ```text
 wlan0 -> Bad_Puppy
-  IP: 192.168.31.174/24（DHCP 当前租约）
+  IP: 192.168.31.192/24（固定地址）
   gateway: 192.168.31.1
   connection.autoconnect: yes
   ipv4.method: auto
@@ -144,7 +144,7 @@ wlan0 -> Bad_Puppy
   effective default route metric: 600
 
 wlan1 -> YSC-JYML-dt3tfa-5G
-  IP: 192.168.2.214/24
+  IP: 192.168.2.92/24
   connection.autoconnect: yes
   ipv4.method: auto
   ipv4.never-default: yes
@@ -256,15 +256,15 @@ python3 motion_host_packet_capture.py remote-capture \
 
 ## 8. 常用网页入口
 
-工具在感知主机运行时，开发机连接 `Bad_Puppy` 后，使用感知主机 `wlan0` 当前 DHCP 地址访问：
+工具在感知主机运行时，开发机连接 `Bad_Puppy` 后，使用感知主机 `wlan0` 固定地址访问：
 
 ```text
-D435i 彩色预览:       http://192.168.31.174:8080
-广角相机预览:         http://192.168.31.174:8081
-ROS 导航调试看板:     http://192.168.31.174:8082
+D435i 彩色预览:       http://192.168.31.192:8080
+广角相机预览:         http://192.168.31.192:8081
+ROS 导航调试看板:     http://192.168.31.192:8082
 ```
 
-`192.168.31.174` 是当前 DHCP 租约，不是固定地址。无法访问时，先在感知主机执行：
+`192.168.31.192` 是当前固定地址。无法访问时，先在感知主机执行：
 
 ```bash
 ip -br -4 addr show wlan0

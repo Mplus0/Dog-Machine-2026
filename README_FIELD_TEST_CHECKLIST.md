@@ -16,9 +16,9 @@ README_NETWORK_TOPOLOGY.md
 测试人员：
 开发路由器/WiFi：Bad_Puppy
 开发路由器网关：192.168.31.1
-感知主机 wlan0：192.168.31.174/24，DHCP 当前地址，默认路由
+感知主机 wlan0：192.168.31.192/24，固定地址，默认路由
 感知主机 wlan0 MAC：6C:1F:F7:88:0C:02
-感知主机 wlan1：192.168.2.214/24，连接机器狗 AP，ipv4.never-default=yes
+感知主机 wlan1：192.168.2.92/24，连接机器狗 AP，ipv4.never-default=yes
 感知主机 wlan1 MAC：6C:1F:F7:F4:09:76
 机器狗对外 WiFi/AP 名：YSC-JYML-dt3tfa-5G
 感知主机内部 IP：192.168.1.103
@@ -30,7 +30,7 @@ git commit：
 主要目标：
 ```
 
-注意：`192.168.31.174` 是当前 DHCP 租约，不是固定地址。每次现场测试先通过路由器客户端列表或 `ip -br -4 addr show wlan0` 复核。
+注意：`192.168.31.192` 是当前固定地址。每次现场测试仍建议通过 `ip -br -4 addr show wlan0` 复核接口状态。
 
 ## 1. 代码与环境
 
@@ -63,14 +63,14 @@ nano private_robot_access.yaml
 至少确认：
 
 ```text
-robot_hotspot_ip: 192.168.31.174（当前 DHCP 地址）
+robot_hotspot_ip: 192.168.31.192（固定地址）
 developer_wifi_ssid: Bad_Puppy
 perception_management_interface: wlan0
 perception_wifi_adapter: USB ID 368b:8d85，具体型号未确认，driver=usb
 perception_management_mac: 6C:1F:F7:88:0C:02
 robot_wifi_ssid: YSC-JYML-dt3tfa-5G
 perception_robot_ap_interface: wlan1
-perception_robot_ap_ip: 192.168.2.214
+perception_robot_ap_ip: 192.168.2.92
 perception_robot_ap_adapter: USB ID 368b:8d85，具体型号未确认，driver=usb
 perception_robot_ap_mac: 6C:1F:F7:F4:09:76
 perception_host: 192.168.1.103
@@ -116,7 +116,7 @@ ssh -J ysc@192.168.2.1 ysc@192.168.1.103
 
 ```text
 是否能通过 Bad_Puppy 直接 SSH：
-wlan0 当前 DHCP 地址：
+wlan0 固定地址：
 是否需要使用运动主机跳板：
 ```
 
@@ -141,7 +141,7 @@ ping -c 4 192.168.1.120
 
 ```text
 wlan0 是否连接 Bad_Puppy：
-wlan0 当前 DHCP 地址：
+wlan0 固定地址：
 wlan0 是否承担唯一默认路由：
 wlan1 是否连接 YSC-JYML-dt3tfa-5G：
 wlan1 IP 是否为 192.168.2.x：
@@ -240,10 +240,10 @@ python3 ros_nav_debug_stream.py --port 8082
 开发机浏览器打开：
 
 ```text
-http://192.168.31.174:8082
+http://192.168.31.192:8082
 ```
 
-`192.168.31.174` 是当前 DHCP 地址，访问失败时先执行 `ip -br -4 addr show wlan0` 复核。
+`192.168.31.192` 是当前固定地址，访问失败时先执行 `ip -br -4 addr show wlan0` 复核。
 
 完整 RViz 诊断：
 
