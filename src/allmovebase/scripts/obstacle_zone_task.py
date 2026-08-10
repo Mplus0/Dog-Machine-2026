@@ -15,7 +15,7 @@ from nav_msgs.msg import OccupancyGrid
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import Bool, String
 
-from task_budget import TaskBudget
+from allmovebase.task_budget import TaskBudget
 
 
 class ObstacleZoneTask(object):

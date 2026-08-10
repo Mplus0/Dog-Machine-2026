@@ -6,11 +6,8 @@ from catkin_pkg.python_setup import generate_distutils_setup
 
 
 setup_args = generate_distutils_setup(
-    py_modules=[
-        "task_budget",
-        "dog_arm_task_client",
-    ],
-    package_dir={"": "scripts"},
+    packages=["allmovebase"],
+    package_dir={"": "src"},
 )
 
 setup(**setup_args)

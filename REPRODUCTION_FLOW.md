@@ -56,7 +56,7 @@ rospack find message_transformer
 rospack find dog_motion
 rospack find dog_arm_bridge
 
-python3 -c "import rospy, yaml, cv2, pygame, actionlib; from move_base_msgs.msg import MoveBaseAction; from task_budget import TaskBudget; from dog_arm_task_client import DogArmTaskClient"
+python3 -c "import rospy, yaml, cv2, pygame, actionlib; from move_base_msgs.msg import MoveBaseAction; from allmovebase.task_budget import TaskBudget; from allmovebase.dog_arm_task_client import DogArmTaskClient"
 ```
 
 通过标准：`catkin_make` 成功，四个 ROS 包都能被找到，Python 导入无报错。

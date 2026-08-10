@@ -92,3 +92,4 @@ class TaskBudget(object):
         if self.enabled and self._start_time is not None:
             rospy.loginfo("[task_budget] %s: elapsed=%.1fs remaining=%.1fs total=%.1fs",
                           label, self.elapsed(), self.remaining(), self.total_sec)
+

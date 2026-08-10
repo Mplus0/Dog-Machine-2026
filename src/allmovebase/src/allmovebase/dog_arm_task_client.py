@@ -189,3 +189,4 @@ class DogArmTaskClient(object):
     def place_to_zone(self, label, timeout):
         ok, _ = self.run_task("place_to_zone", "%s_place" % label, timeout)
         return ok
+
