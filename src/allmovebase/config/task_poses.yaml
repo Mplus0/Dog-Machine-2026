@@ -81,14 +81,14 @@ goals:
     - 0.865
   place_pose_D:
     position:
-    - 0.0
-    - 0.0
+    - 4.531
+    - 4.525
     - 0.0
     orientation:
     - 0.0
     - 0.0
-    - 0.0
-    - 1.0
+    - 0.723
+    - 0.691
 waypoints:
   obs_start:
     position:
