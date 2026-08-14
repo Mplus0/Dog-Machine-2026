@@ -119,3 +119,9 @@ TEST(GravityAlignedDepthToLaserScan, ProducesEmptyScanWhenNoGroundAndFallbackDis
 
 }  // namespace
 }  // namespace depthimage_to_laserscan
+
+int main(int argc, char** argv)
+{
+  testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
+}
