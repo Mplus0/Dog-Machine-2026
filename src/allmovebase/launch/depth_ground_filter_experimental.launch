@@ -4,6 +4,7 @@
   <arg name="depth_camera_info_topic" default="/camera/depth/camera_info"/>
   <arg name="imu_topic" default="/imu/data_throttled"/>
   <arg name="output_scan_topic" default="/scan_ground_filtered"/>
+  <arg name="output_clearing_scan_topic" default="/scan_ground_clearing"/>
   <arg name="output_frame_id" default="scan_ground_filtered_link"/>
   <arg name="config" default="$(find allmovebase)/config/gravity_ground_filter.yaml"/>
   <arg name="scan_x" default="0.2"/>
@@ -25,6 +26,7 @@
     <remap from="camera_info" to="$(arg depth_camera_info_topic)"/>
     <remap from="imu" to="$(arg imu_topic)"/>
     <remap from="scan" to="$(arg output_scan_topic)"/>
+    <remap from="clearing_scan" to="$(arg output_clearing_scan_topic)"/>
     <remap from="diagnostics" to="/ground_filter/diagnostics"/>
   </node>
 </launch>

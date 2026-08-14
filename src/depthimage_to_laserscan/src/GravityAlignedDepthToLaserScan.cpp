@@ -162,6 +162,7 @@ GravityAlignedFilterStats::GravityAlignedFilterStats()
   , ground_inlier_points(0)
   , obstacle_points(0)
   , observed_scan_bins(0)
+  , clearing_scan_bins(0)
   , ground_plane_detected(false)
   , used_nominal_ground(false)
   , ground_height(std::numeric_limits<double>::quiet_NaN())
@@ -231,7 +232,8 @@ sensor_msgs::LaserScanPtr GravityAlignedDepthToLaserScan::convert(
     const sensor_msgs::ImageConstPtr& depth_msg,
     const sensor_msgs::CameraInfoConstPtr& info_msg,
     const sensor_msgs::Imu& imu_msg,
-    GravityAlignedFilterStats* stats) const
+    GravityAlignedFilterStats* stats,
+    sensor_msgs::LaserScanPtr* clearing_scan) const
 {
   validateConfig();
   if (!depth_msg || !info_msg)
@@ -312,7 +314,7 @@ sensor_msgs::LaserScanPtr GravityAlignedDepthToLaserScan::convert(
     throw std::runtime_error("unsupported depth image encoding: " + depth_msg->encoding);
   }
 
-  return convertLevelPoints(points, depth_msg->header, stats);
+  return convertLevelPoints(points, depth_msg->header, stats, clearing_scan);
 }
 
 double GravityAlignedDepthToLaserScan::signedDistance(
@@ -577,24 +579,32 @@ sensor_msgs::LaserScanPtr GravityAlignedDepthToLaserScan::makeScan(
 sensor_msgs::LaserScanPtr GravityAlignedDepthToLaserScan::convertLevelPoints(
     const std::vector<GravityAlignedPoint>& points,
     const std_msgs::Header& header,
-    GravityAlignedFilterStats* stats) const
+    GravityAlignedFilterStats* stats,
+    sensor_msgs::LaserScanPtr* clearing_scan) const
 {
   validateConfig();
   GravityAlignedFilterStats local_stats;
   local_stats.valid_depth_points = points.size();
   const Plane ground_plane = estimateGroundPlane(points, &local_stats);
   sensor_msgs::LaserScanPtr scan = makeScan(header);
+  sensor_msgs::LaserScanPtr clear_scan = makeScan(header);
   if (!ground_plane.valid)
   {
     if (stats)
     {
       *stats = local_stats;
     }
+    if (clearing_scan)
+    {
+      *clearing_scan = clear_scan;
+    }
     return scan;
   }
 
   std::vector<bool> observed(scan->ranges.size(), false);
   std::vector<bool> occupied(scan->ranges.size(), false);
+  std::vector<float> farthest_ground_range(
+      scan->ranges.size(), std::numeric_limits<float>::quiet_NaN());
   for (std::size_t i = 0; i < points.size(); ++i)
   {
     const GravityAlignedPoint& point = points[i];
@@ -618,7 +628,20 @@ sensor_msgs::LaserScanPtr GravityAlignedDepthToLaserScan::convertLevelPoints(
     observed[index] = true;
 
     const double height = signedDistance(ground_plane, point);
-    if (height < config_.min_obstacle_height || height > config_.max_obstacle_height)
+    if (height < config_.min_obstacle_height)
+    {
+      // Only points on/just above the fitted plane prove traversable ground.
+      // Reject below-plane depth outliers instead of letting them extend a
+      // clearing ray.
+      if (height >= -config_.ground_distance_threshold &&
+          (!std::isfinite(farthest_ground_range[index]) ||
+           planar_range > farthest_ground_range[index]))
+      {
+        farthest_ground_range[index] = static_cast<float>(planar_range);
+      }
+      continue;
+    }
+    if (height > config_.max_obstacle_height)
     {
       continue;
     }
@@ -635,6 +658,21 @@ sensor_msgs::LaserScanPtr GravityAlignedDepthToLaserScan::convertLevelPoints(
     if (observed[index])
     {
       ++local_stats.observed_scan_bins;
+      // Never clear through a currently detected obstacle.  If no obstacle is
+      // present, the farthest actually observed ground return bounds known
+      // free space without inventing an infinite/no-return measurement.
+      if (occupied[index])
+      {
+        clear_scan->ranges[index] = scan->ranges[index];
+      }
+      else if (std::isfinite(farthest_ground_range[index]))
+      {
+        clear_scan->ranges[index] = farthest_ground_range[index];
+      }
+      if (std::isfinite(clear_scan->ranges[index]))
+      {
+        ++local_stats.clearing_scan_bins;
+      }
       if (config_.use_inf && !occupied[index])
       {
         scan->ranges[index] = std::numeric_limits<float>::infinity();
@@ -644,6 +682,10 @@ sensor_msgs::LaserScanPtr GravityAlignedDepthToLaserScan::convertLevelPoints(
   if (stats)
   {
     *stats = local_stats;
+  }
+  if (clearing_scan)
+  {
+    *clearing_scan = clear_scan;
   }
   return scan;
 }

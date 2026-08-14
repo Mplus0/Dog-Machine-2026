@@ -67,6 +67,7 @@ struct GravityAlignedFilterStats
   std::size_t ground_inlier_points;
   std::size_t obstacle_points;
   std::size_t observed_scan_bins;
+  std::size_t clearing_scan_bins;
   bool ground_plane_detected;
   bool used_nominal_ground;
   double ground_height;
@@ -85,14 +86,16 @@ public:
       const sensor_msgs::ImageConstPtr& depth_msg,
       const sensor_msgs::CameraInfoConstPtr& info_msg,
       const sensor_msgs::Imu& imu_msg,
-      GravityAlignedFilterStats* stats = NULL) const;
+      GravityAlignedFilterStats* stats = NULL,
+      sensor_msgs::LaserScanPtr* clearing_scan = NULL) const;
 
   // Public to make the ground model independently testable with synthetic
   // gravity-aligned point clouds.
   sensor_msgs::LaserScanPtr convertLevelPoints(
       const std::vector<GravityAlignedPoint>& points,
       const std_msgs::Header& header,
-      GravityAlignedFilterStats* stats = NULL) const;
+      GravityAlignedFilterStats* stats = NULL,
+      sensor_msgs::LaserScanPtr* clearing_scan = NULL) const;
 
 private:
   struct Plane

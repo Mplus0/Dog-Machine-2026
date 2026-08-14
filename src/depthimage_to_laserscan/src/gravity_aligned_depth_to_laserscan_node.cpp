@@ -96,6 +96,7 @@ public:
     converter_.setConfig(config);
 
     scan_publisher_ = nh_.advertise<sensor_msgs::LaserScan>("scan", 10);
+    clearing_scan_publisher_ = nh_.advertise<sensor_msgs::LaserScan>("clearing_scan", 10);
     diagnostics_publisher_ = nh_.advertise<diagnostic_msgs::DiagnosticArray>("diagnostics", 2);
     imu_subscriber_ = nh_.subscribe("imu", 50, &GravityAlignedDepthToLaserScanNode::imuCallback, this);
     depth_subscriber_ = image_transport_.subscribeCamera(
@@ -187,6 +188,7 @@ private:
     addDiagnosticValue(&status, "ground_tilt_deg", numberString(stats.ground_tilt * 180.0 / kPi));
     addDiagnosticValue(&status, "obstacle_points", std::to_string(stats.obstacle_points));
     addDiagnosticValue(&status, "observed_scan_bins", std::to_string(stats.observed_scan_bins));
+    addDiagnosticValue(&status, "clearing_scan_bins", std::to_string(stats.clearing_scan_bins));
     array.status.push_back(status);
     diagnostics_publisher_.publish(array);
   }
@@ -236,9 +238,11 @@ private:
     try
     {
       GravityAlignedFilterStats stats;
+      sensor_msgs::LaserScanPtr clearing_scan;
       sensor_msgs::LaserScanPtr scan = converter_.convert(
-          depth_message, info_message, *imu_message, &stats);
+          depth_message, info_message, *imu_message, &stats, &clearing_scan);
       scan_publisher_.publish(scan);
+      clearing_scan_publisher_.publish(clearing_scan);
       publishStatsDiagnostic(depth_message->header, stats, imu_age);
       if (!stats.ground_plane_detected)
       {
@@ -260,6 +264,7 @@ private:
   image_transport::CameraSubscriber depth_subscriber_;
   ros::Subscriber imu_subscriber_;
   ros::Publisher scan_publisher_;
+  ros::Publisher clearing_scan_publisher_;
   ros::Publisher diagnostics_publisher_;
   boost::mutex imu_mutex_;
   sensor_msgs::ImuConstPtr latest_imu_;

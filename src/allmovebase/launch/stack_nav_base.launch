@@ -38,6 +38,6 @@
   <include file="$(find allmovebase)/launch/movebase.launch">
     <arg name="scan_topic" value="$(arg navigation_scan_topic)"/>
     <arg name="use_separate_clearing_scan" value="$(arg start_ground_filter_experimental)"/>
-    <arg name="clearing_scan_topic" value="/scan"/>
+    <arg name="clearing_scan_topic" value="/scan_ground_clearing"/>
   </include>
 </launch>

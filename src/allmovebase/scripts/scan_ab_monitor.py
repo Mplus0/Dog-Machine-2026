@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-"""Print compact raw/ground-filtered LaserScan and body-attitude statistics."""
+"""Print compact raw/marking/clearing LaserScan and attitude statistics."""
 
 import math
 import statistics
@@ -16,21 +16,27 @@ class ScanABMonitor:
         self._lock = threading.Lock()
         self._raw = None
         self._filtered = None
+        self._clearing = None
         self._imu = None
         raw_topic = rospy.get_param("~raw_scan_topic", "/scan")
         filtered_topic = rospy.get_param(
             "~filtered_scan_topic", "/scan_ground_filtered"
         )
+        clearing_topic = rospy.get_param(
+            "~clearing_scan_topic", "/scan_ground_clearing"
+        )
         imu_topic = rospy.get_param("~imu_topic", "/imu/data_throttled")
         self._print_period = float(rospy.get_param("~print_period", 1.0))
         rospy.Subscriber(raw_topic, LaserScan, self._raw_callback, queue_size=1)
         rospy.Subscriber(filtered_topic, LaserScan, self._filtered_callback, queue_size=1)
+        rospy.Subscriber(clearing_topic, LaserScan, self._clearing_callback, queue_size=1)
         rospy.Subscriber(imu_topic, Imu, self._imu_callback, queue_size=1)
         self._timer = rospy.Timer(rospy.Duration(self._print_period), self._report)
         rospy.loginfo(
-            "scan A/B monitor: raw=%s filtered=%s imu=%s",
+            "scan monitor: raw=%s filtered=%s clearing=%s imu=%s",
             raw_topic,
             filtered_topic,
+            clearing_topic,
             imu_topic,
         )
 
@@ -41,6 +47,10 @@ class ScanABMonitor:
     def _filtered_callback(self, message):
         with self._lock:
             self._filtered = message
+
+    def _clearing_callback(self, message):
+        with self._lock:
+            self._clearing = message
 
     def _imu_callback(self, message):
         with self._lock:
@@ -78,14 +88,16 @@ class ScanABMonitor:
         with self._lock:
             raw = self._raw
             filtered = self._filtered
+            clearing = self._clearing
             imu = self._imu
         roll, pitch = self._attitude_degrees(imu)
         rospy.loginfo(
-            "roll=%6.2f pitch=%6.2f | raw: %s | filtered: %s",
+            "roll=%6.2f pitch=%6.2f | raw: %s | filtered: %s | clearing: %s",
             roll,
             pitch,
             self._scan_summary(raw),
             self._scan_summary(filtered),
+            self._scan_summary(clearing),
         )
 
 

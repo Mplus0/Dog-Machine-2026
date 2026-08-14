@@ -33,7 +33,7 @@ GravityAlignedFilterConfig testConfig()
   return config;
 }
 
-std::vector<GravityAlignedPoint> makeGroundAndWall()
+std::vector<GravityAlignedPoint> makeGround()
 {
   std::vector<GravityAlignedPoint> points;
   // A slightly sloped floor: z = 0.02*x - 0.01*y - 0.42.
@@ -47,6 +47,12 @@ std::vector<GravityAlignedPoint> makeGroundAndWall()
     }
   }
 
+  return points;
+}
+
+std::vector<GravityAlignedPoint> makeGroundAndWall()
+{
+  std::vector<GravityAlignedPoint> points = makeGround();
   // A vertical obstacle centered in front of the camera.
   for (int iy = -20; iy <= 20; ++iy)
   {
@@ -65,10 +71,11 @@ TEST(GravityAlignedDepthToLaserScan, RemovesFloorAndKeepsVerticalObstacle)
   GravityAlignedDepthToLaserScan converter;
   converter.setConfig(testConfig());
   GravityAlignedFilterStats stats;
+  sensor_msgs::LaserScanPtr clearing_scan;
   std_msgs::Header header;
   header.frame_id = "camera";
   const sensor_msgs::LaserScanPtr scan =
-      converter.convertLevelPoints(makeGroundAndWall(), header, &stats);
+      converter.convertLevelPoints(makeGroundAndWall(), header, &stats, &clearing_scan);
 
   ASSERT_TRUE(stats.ground_plane_detected);
   EXPECT_FALSE(stats.used_nominal_ground);
@@ -76,12 +83,18 @@ TEST(GravityAlignedDepthToLaserScan, RemovesFloorAndKeepsVerticalObstacle)
   EXPECT_LT(stats.ground_tilt, 0.04);
   EXPECT_GT(stats.ground_inlier_points, 1000u);
   EXPECT_GT(stats.obstacle_points, 100u);
+  EXPECT_GT(stats.clearing_scan_bins, 100u);
   EXPECT_EQ("scan_ground_filtered_link", scan->header.frame_id);
+  ASSERT_TRUE(clearing_scan);
+  EXPECT_EQ("scan_ground_filtered_link", clearing_scan->header.frame_id);
 
   const std::size_t center = static_cast<std::size_t>(
       std::floor((0.0 - scan->angle_min) / scan->angle_increment));
   ASSERT_LT(center, scan->ranges.size());
   EXPECT_NEAR(2.0, scan->ranges[center], 0.02);
+  // A detected obstacle bounds clearing at its own endpoint, even when floor
+  // returns behind it are available in the same projected azimuth bin.
+  EXPECT_NEAR(2.0, clearing_scan->ranges[center], 0.02);
 
   // Most floor-only rays stay invalid instead of becoming false obstacles.
   std::size_t finite_bins = 0;
@@ -93,6 +106,28 @@ TEST(GravityAlignedDepthToLaserScan, RemovesFloorAndKeepsVerticalObstacle)
     }
   }
   EXPECT_LT(finite_bins, 20u);
+}
+
+TEST(GravityAlignedDepthToLaserScan, ClearsToObservedGroundAfterObstacleRemoval)
+{
+  GravityAlignedDepthToLaserScan converter;
+  converter.setConfig(testConfig());
+  const std::vector<GravityAlignedPoint> ground = makeGround();
+  GravityAlignedFilterStats stats;
+  sensor_msgs::LaserScanPtr clearing_scan;
+  const sensor_msgs::LaserScanPtr scan =
+      converter.convertLevelPoints(ground, std_msgs::Header(), &stats, &clearing_scan);
+
+  ASSERT_TRUE(stats.ground_plane_detected);
+  ASSERT_TRUE(clearing_scan);
+  const std::size_t center = static_cast<std::size_t>(
+      std::floor((0.0 - scan->angle_min) / scan->angle_increment));
+  ASSERT_LT(center, scan->ranges.size());
+  EXPECT_TRUE(std::isnan(scan->ranges[center]));
+  ASSERT_TRUE(std::isfinite(clearing_scan->ranges[center]));
+  EXPECT_GT(clearing_scan->ranges[center], 2.5);
+  EXPECT_LE(clearing_scan->ranges[center], scan->range_max);
+  EXPECT_GT(stats.clearing_scan_bins, 100u);
 }
 
 TEST(GravityAlignedDepthToLaserScan, ProducesEmptyScanWhenNoGroundAndFallbackDisabled)
@@ -107,13 +142,16 @@ TEST(GravityAlignedDepthToLaserScan, ProducesEmptyScanWhenNoGroundAndFallbackDis
   }
 
   GravityAlignedFilterStats stats;
+  sensor_msgs::LaserScanPtr clearing_scan;
   const sensor_msgs::LaserScanPtr scan =
-      converter.convertLevelPoints(points, std_msgs::Header(), &stats);
+      converter.convertLevelPoints(points, std_msgs::Header(), &stats, &clearing_scan);
   EXPECT_FALSE(stats.ground_plane_detected);
   EXPECT_FALSE(stats.used_nominal_ground);
+  ASSERT_TRUE(clearing_scan);
   for (std::size_t i = 0; i < scan->ranges.size(); ++i)
   {
     EXPECT_TRUE(std::isnan(scan->ranges[i]));
+    EXPECT_TRUE(std::isnan(clearing_scan->ranges[i]));
   }
 }
 

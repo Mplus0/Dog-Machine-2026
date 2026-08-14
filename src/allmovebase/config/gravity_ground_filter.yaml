@@ -27,9 +27,9 @@ min_ground_inliers: 200
 min_ground_inlier_ratio: 0.08
 max_ransac_points: 6000
 
-# A nominal plane keeps filtering conservative if RANSAC briefly fails. Empty
-# filtered bins remain NaN, so this experimental topic cannot clear unknown
-# space until clearing behavior is separately validated.
+# A nominal plane keeps filtering conservative if RANSAC briefly fails. The
+# obstacle scan keeps empty bins as NaN. A separate ground-aware clearing scan
+# publishes only finite, actually observed ground/obstacle ranges.
 fallback_to_nominal_ground: true
 use_inf: false
 imu_timeout: 0.12
