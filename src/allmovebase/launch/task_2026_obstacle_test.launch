@@ -35,6 +35,8 @@
   <arg name="camera_tf_yaml" default="$(find allmovebase)/config/camera2base_tf.yaml"/>
   <arg name="navigation_map_yaml" default="$(find allmovebase)/map/map.yaml"/>
   <arg name="amcl_map_yaml" default="$(find allmovebase)/map/map_amcl.yaml"/>
+  <arg name="start_ground_filter_experimental" default="false"/>
+  <arg name="navigation_scan_topic" default="/scan"/>
 
   <include file="$(find message_transformer)/launch/message_transformer.launch">
     <arg name="standing_basic_states" value="$(arg standing_basic_states)"/>
@@ -53,6 +55,8 @@
     <arg name="camera_tf_yaml" value="$(arg camera_tf_yaml)"/>
     <arg name="navigation_map_yaml" value="$(arg navigation_map_yaml)"/>
     <arg name="amcl_map_yaml" value="$(arg amcl_map_yaml)"/>
+    <arg name="start_ground_filter_experimental" value="$(arg start_ground_filter_experimental)"/>
+    <arg name="navigation_scan_topic" value="$(arg navigation_scan_topic)"/>
   </include>
 
   <group if="$(arg run_obstacle_task)">

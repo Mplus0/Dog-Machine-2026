@@ -1,0 +1,30 @@
+<launch>
+  <!-- Run beside the existing /scan pipeline for non-invasive A/B testing. -->
+  <arg name="depth_image_topic" default="/camera/depth/image_rect_raw"/>
+  <arg name="depth_camera_info_topic" default="/camera/depth/camera_info"/>
+  <arg name="imu_topic" default="/imu/data_throttled"/>
+  <arg name="output_scan_topic" default="/scan_ground_filtered"/>
+  <arg name="output_frame_id" default="scan_ground_filtered_link"/>
+  <arg name="config" default="$(find allmovebase)/config/gravity_ground_filter.yaml"/>
+  <arg name="scan_x" default="0.2"/>
+  <arg name="scan_y" default="0.0"/>
+  <arg name="scan_z" default="0.0"/>
+
+  <node pkg="tf" type="static_transform_publisher"
+        name="scan_ground_filtered_static_tf"
+        args="$(arg scan_x) $(arg scan_y) $(arg scan_z) 0 0 0 base_link $(arg output_frame_id) 100"/>
+
+  <node pkg="depthimage_to_laserscan"
+        type="gravity_aligned_depth_to_laserscan"
+        name="gravity_aligned_depth_to_laserscan"
+        output="screen"
+        required="false">
+    <rosparam command="load" file="$(arg config)"/>
+    <param name="output_frame_id" value="$(arg output_frame_id)"/>
+    <remap from="image" to="$(arg depth_image_topic)"/>
+    <remap from="camera_info" to="$(arg depth_camera_info_topic)"/>
+    <remap from="imu" to="$(arg imu_topic)"/>
+    <remap from="scan" to="$(arg output_scan_topic)"/>
+    <remap from="diagnostics" to="/ground_filter/diagnostics"/>
+  </node>
+</launch>

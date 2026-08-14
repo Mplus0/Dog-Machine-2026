@@ -22,6 +22,8 @@
   <arg name="camera_tf_yaml" default="$(find allmovebase)/config/camera2base_tf.yaml"/>
   <arg name="navigation_map_yaml" default="$(find allmovebase)/map/map.yaml"/>
   <arg name="amcl_map_yaml" default="$(find allmovebase)/map/map_amcl.yaml"/>
+  <arg name="start_ground_filter_experimental" default="false"/>
+  <arg name="navigation_scan_topic" default="/scan"/>
   <arg name="start_dog_arm_bridge" default="true"/>
   <arg name="enable_arm_base_adjust_execution" default="false"/>
 
@@ -60,6 +62,8 @@
     <arg name="camera_tf_yaml" value="$(arg camera_tf_yaml)"/>
     <arg name="navigation_map_yaml" value="$(arg navigation_map_yaml)"/>
     <arg name="amcl_map_yaml" value="$(arg amcl_map_yaml)"/>
+    <arg name="start_ground_filter_experimental" value="$(arg start_ground_filter_experimental)"/>
+    <arg name="navigation_scan_topic" value="$(arg navigation_scan_topic)"/>
   </include>
 
   <group if="$(arg start_dog_arm_bridge)">

@@ -1,0 +1,38 @@
+# Experimental gravity-aligned depth-to-scan filter.
+# Keep /scan unchanged during A/B validation; this node publishes
+# /scan_ground_filtered until the acceptance criteria are met.
+camera_mount_roll_deg: 0.0
+camera_mount_pitch_deg: 18.8282205
+camera_mount_yaw_deg: 0.0
+
+range_min: 0.10
+range_max: 3.00
+angle_min: -0.75
+angle_max: 0.75
+angle_increment: 0.00234741784  # 1.5 / 639 rad
+scan_time: 0.0666666667          # D435 depth stream is configured for 15 Hz
+depth_stride: 2
+
+# Plane z=-height is estimated after IMU gravity alignment. These limits are
+# deliberately broad enough for normal standing/body-height changes.
+min_camera_height: 0.20
+max_camera_height: 0.80
+nominal_camera_height: 0.415
+ground_distance_threshold: 0.04
+min_obstacle_height: 0.06
+max_obstacle_height: 1.50
+max_ground_tilt_deg: 20.0
+ransac_iterations: 40
+min_ground_inliers: 200
+min_ground_inlier_ratio: 0.08
+max_ransac_points: 6000
+
+# A nominal plane keeps filtering conservative if RANSAC briefly fails. Empty
+# filtered bins remain NaN, so this experimental topic cannot clear unknown
+# space until clearing behavior is separately validated.
+fallback_to_nominal_ground: true
+use_inf: false
+imu_timeout: 0.12
+require_imu: true
+diagnostic_period: 1.0
+output_frame_id: scan_ground_filtered_link

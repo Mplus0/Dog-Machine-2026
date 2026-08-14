@@ -181,6 +181,7 @@ catkin_install_python(PROGRAMS
   scripts/pick_place_task.py
   scripts/full_task.py
   scripts/camera_static_tf_from_yaml.py
+  scripts/scan_ab_monitor.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

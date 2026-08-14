@@ -1,7 +1,9 @@
 <launch>
 
+<arg name="scan_topic" default="/scan"/>
+
 <node pkg="amcl" type="amcl" name="amcl">
-    <remap from="scan" to="/scan"/>
+    <remap from="scan" to="$(arg scan_topic)"/>
     <remap from="odom" to="/odometry/filtered"/>
     <remap from="map" to="/amcl_map" />
     <remap from="static_map" to="/amcl_static_map" />

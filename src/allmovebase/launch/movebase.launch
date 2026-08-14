@@ -1,7 +1,9 @@
 
 
 <launch>
+  <arg name="scan_topic" default="/scan"/>
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" >
+   <remap from="/scan" to="$(arg scan_topic)"/>
    <param name="base_global_planner" value="navfn/NavfnROS"/>
    <rosparam file="$(find allmovebase)/config/navfn_planner_params.yaml" command="load"/>
     <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />

@@ -8,6 +8,8 @@
   <arg name="camera_tf_yaml" default="$(find allmovebase)/config/camera2base_tf.yaml"/>
   <arg name="navigation_map_yaml" default="$(find allmovebase)/map/map.yaml"/>
   <arg name="amcl_map_yaml" default="$(find allmovebase)/map/map_amcl.yaml"/>
+  <arg name="start_ground_filter_experimental" default="false"/>
+  <arg name="navigation_scan_topic" default="/scan"/>
 
   <group if="$(arg start_camera)">
     <include file="$(find allmovebase)/launch/camera.launch">
@@ -23,11 +25,17 @@
   </include>
   <include file="$(find allmovebase)/launch/odom.launch"/>
   <include file="$(find allmovebase)/launch/depth2laser.launch"/>
+  <group if="$(arg start_ground_filter_experimental)">
+    <include file="$(find allmovebase)/launch/depth_ground_filter_experimental.launch"/>
+  </group>
   <include file="$(find allmovebase)/launch/map_server.launch">
     <arg name="navigation_map_yaml" value="$(arg navigation_map_yaml)"/>
     <arg name="amcl_map_yaml" value="$(arg amcl_map_yaml)"/>
   </include>
-  <include file="$(find allmovebase)/launch/amcl.launch"/>
-  <include file="$(find allmovebase)/launch/movebase.launch"/>
+  <include file="$(find allmovebase)/launch/amcl.launch">
+    <arg name="scan_topic" value="$(arg navigation_scan_topic)"/>
+  </include>
+  <include file="$(find allmovebase)/launch/movebase.launch">
+    <arg name="scan_topic" value="$(arg navigation_scan_topic)"/>
+  </include>
 </launch>
-
