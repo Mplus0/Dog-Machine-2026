@@ -7,19 +7,10 @@
   <arg name="depth_image_topic" default="/camera/depth/image_rect_raw"/>
   <arg name="depth_camera_info_topic" default="/camera/depth/camera_info"/>
   <arg name="scan_height" default="1"/>
-  <arg name="scan_row_offset" default="-132"/>
   <arg name="scan_time" default="0.033"/>
   <arg name="range_min" default="0.1"/>
   <arg name="range_max" default="3.0"/>
-  <arg name="output_frame_id" default="scan_link"/>
-  <arg name="scan_x" default="0.2"/>
-  <arg name="scan_y" default="0.0"/>
-  <arg name="scan_z" default="0.0"/>
-
-  <!-- The generated LaserScan is a horizontal synthetic scan, not the
-       physically tilted camera optical plane. Keep it on a dedicated frame. -->
-  <node pkg="tf" type="static_transform_publisher" name="scan_static_tf"
-        args="$(arg scan_x) $(arg scan_y) $(arg scan_z) 0 0 0 base_link $(arg output_frame_id) 100"/>
+  <arg name="output_frame_id" default="camera_link"/>
 
   <!-- Depth Image to Laser Scan Node -->
   <node name="depthimage_to_laserscan" pkg="depthimage_to_laserscan" type="depthimage_to_laserscan" args="">
@@ -32,7 +23,6 @@
     <!-- PARAMETERS: -->
     <!-- These are the default values. --> 
     <param name="scan_height"     type="int"    value="$(arg scan_height)"/> <!-- default: 1 pixel. Number of pixel rows used to generate laser scan. -->
-    <param name="scan_row_offset" type="int"    value="$(arg scan_row_offset)"/>
     <param name="scan_time"       type="double" value="$(arg scan_time)"/> <!-- default:0.033, 30 FPS . Time between scans. -->
     <param name="range_min"       type="double" value="$(arg range_min)"/> <!--default:0.45m. Ranges less than this are considered -Inf. -->
     <param name="range_max"       type="double" value="$(arg range_max)"/> <!--default: 10m. Ranges greater than this are considered +Inf. -->

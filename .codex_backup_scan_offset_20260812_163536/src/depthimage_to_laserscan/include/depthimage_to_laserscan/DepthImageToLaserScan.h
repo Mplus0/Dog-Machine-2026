@@ -103,12 +103,6 @@ namespace depthimage_to_laserscan
     void set_scan_height(const int scan_height);
 
     /**
-     * Sets the vertical offset of the sampled image band from cy().
-     * Negative values select rows above the image center.
-     */
-    void set_scan_row_offset(const int scan_row_offset);
-
-    /**
      * Sets the frame_id for the output LaserScan.
      *
      * Output frame_id for the LaserScan.  Will probably NOT be the same frame_id as the depth image.
@@ -182,12 +176,11 @@ namespace depthimage_to_laserscan
       // Combine unit conversion (if necessary) with scaling by focal length for computing (X,Y)
       const double unit_scaling = depthimage_to_laserscan::DepthTraits<T>::toMeters( T(1) );
       const float constant_x = unit_scaling / cam_model.fx();
-      const float constant_y = unit_scaling / cam_model.fy();
 
       const T* depth_row = reinterpret_cast<const T*>(&depth_msg->data[0]);
       const int row_step = depth_msg->step / sizeof(T);
 
-      const int offset = (int)(center_y + scan_row_offset_ - scan_height/2);
+      const int offset = (int)(center_y - scan_height/2);
       depth_row += offset*row_step; // Offset to center of image
 
       for(int v = offset; v < offset+scan_height_; ++v, depth_row += row_step){
@@ -202,13 +195,10 @@ namespace depthimage_to_laserscan
           if (depthimage_to_laserscan::DepthTraits<T>::valid(depth)){ // Not NaN or Inf
             // Calculate in XYZ
             double x = (u - center_x) * depth * constant_x;
-            double y = (v - center_y) * depth * constant_y;
             double z = depthimage_to_laserscan::DepthTraits<T>::toMeters(depth);
 
-            // With an off-center scan row, include the vertical ray component.
-            // For a row selected to compensate camera tilt this is the actual
-            // horizontal ray length in the robot frame.
-            r = sqrt(x*x + y*y + z*z);
+            // Calculate actual distance
+            r = hypot(x, z);
           }
 
           // Determine if this point should be used.
@@ -225,7 +215,6 @@ namespace depthimage_to_laserscan
     float range_min_; ///< Stores the current minimum range to use.
     float range_max_; ///< Stores the current maximum range to use.
     int scan_height_; ///< Number of pixel rows to use when producing a laserscan from an area.
-    int scan_row_offset_; ///< Vertical row offset from the calibrated image center.
     std::string output_frame_id_; ///< Output frame_id for each laserscan.  This is likely NOT the camera's frame_id.
   };
 
