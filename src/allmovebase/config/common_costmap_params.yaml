@@ -6,6 +6,9 @@ footprint_padding: 0.1
 # --- 障碍物层参数配置（仅激光源，plugins 机制）---
 obstacle_layer:
   enabled: true
+  # Legacy/default mode uses this single source for both operations.  In the
+  # experimental ground-filter launch, movebase.launch overrides this source
+  # to marking-only and adds raw_scan_clearing_sensor as clearing-only.
   observation_sources: laser_scan_sensor
   laser_scan_sensor:
     topic: /scan

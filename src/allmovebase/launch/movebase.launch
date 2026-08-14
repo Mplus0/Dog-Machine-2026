@@ -2,8 +2,14 @@
 
 <launch>
   <arg name="scan_topic" default="/scan"/>
+  <!--
+    In ground-filter mode the filtered scan marks obstacles, while the original
+    depth scan supplies finite, sensor-bounded clearing rays.  Keeping this
+    switch false preserves the legacy single-/scan configuration.
+  -->
+  <arg name="use_separate_clearing_scan" default="false"/>
+  <arg name="clearing_scan_topic" default="/scan"/>
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" >
-   <remap from="/scan" to="$(arg scan_topic)"/>
    <param name="base_global_planner" value="navfn/NavfnROS"/>
    <rosparam file="$(find allmovebase)/config/navfn_planner_params.yaml" command="load"/>
     <param name="base_local_planner" value="teb_local_planner/TebLocalPlannerROS" />
@@ -13,6 +19,66 @@
     <rosparam file="$(find allmovebase)/config/local_costmap_params.yaml" command="load" />
     <rosparam file="$(find allmovebase)/config/common_costmap_params.yaml" command="load" ns="global_costmap" />
     <rosparam file="$(find allmovebase)/config/common_costmap_params.yaml" command="load" ns="local_costmap" />
+
+    <!-- Explicit topics avoid a node-wide /scan remap also changing the raw clearing source. -->
+    <param name="global_costmap/obstacle_layer/laser_scan_sensor/topic" value="$(arg scan_topic)"/>
+    <param name="local_costmap/obstacle_layer/laser_scan_sensor/topic" value="$(arg scan_topic)"/>
+
+    <!-- Legacy mode: the selected scan performs both marking and clearing. -->
+    <param unless="$(arg use_separate_clearing_scan)"
+           name="global_costmap/obstacle_layer/observation_sources" value="laser_scan_sensor"/>
+    <param unless="$(arg use_separate_clearing_scan)"
+           name="local_costmap/obstacle_layer/observation_sources" value="laser_scan_sensor"/>
+    <param unless="$(arg use_separate_clearing_scan)"
+           name="global_costmap/obstacle_layer/laser_scan_sensor/clearing" value="true"/>
+    <param unless="$(arg use_separate_clearing_scan)"
+           name="local_costmap/obstacle_layer/laser_scan_sensor/clearing" value="true"/>
+
+    <!-- Ground-filter mode: filtered endpoints mark; finite raw returns only clear. -->
+    <param if="$(arg use_separate_clearing_scan)"
+           name="global_costmap/obstacle_layer/observation_sources"
+           value="laser_scan_sensor raw_scan_clearing_sensor"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="local_costmap/obstacle_layer/observation_sources"
+           value="laser_scan_sensor raw_scan_clearing_sensor"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="global_costmap/obstacle_layer/laser_scan_sensor/clearing" value="false"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="local_costmap/obstacle_layer/laser_scan_sensor/clearing" value="false"/>
+
+    <param if="$(arg use_separate_clearing_scan)"
+           name="global_costmap/obstacle_layer/raw_scan_clearing_sensor/topic"
+           value="$(arg clearing_scan_topic)"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="global_costmap/obstacle_layer/raw_scan_clearing_sensor/data_type"
+           value="LaserScan"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="global_costmap/obstacle_layer/raw_scan_clearing_sensor/marking" value="false"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="global_costmap/obstacle_layer/raw_scan_clearing_sensor/clearing" value="true"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="global_costmap/obstacle_layer/raw_scan_clearing_sensor/inf_is_valid" value="false"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="global_costmap/obstacle_layer/raw_scan_clearing_sensor/obstacle_range" value="3.0"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="global_costmap/obstacle_layer/raw_scan_clearing_sensor/raytrace_range" value="3.0"/>
+
+    <param if="$(arg use_separate_clearing_scan)"
+           name="local_costmap/obstacle_layer/raw_scan_clearing_sensor/topic"
+           value="$(arg clearing_scan_topic)"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="local_costmap/obstacle_layer/raw_scan_clearing_sensor/data_type"
+           value="LaserScan"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="local_costmap/obstacle_layer/raw_scan_clearing_sensor/marking" value="false"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="local_costmap/obstacle_layer/raw_scan_clearing_sensor/clearing" value="true"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="local_costmap/obstacle_layer/raw_scan_clearing_sensor/inf_is_valid" value="false"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="local_costmap/obstacle_layer/raw_scan_clearing_sensor/obstacle_range" value="3.0"/>
+    <param if="$(arg use_separate_clearing_scan)"
+           name="local_costmap/obstacle_layer/raw_scan_clearing_sensor/raytrace_range" value="3.0"/>
 
     <param name="global_costmap/robot_base_frame" value="base_link"/>
     <param name="global_costmap/global_frame" value="map"/>
