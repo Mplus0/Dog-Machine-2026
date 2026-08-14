@@ -74,13 +74,20 @@ def finite_scan_summary(message):
 
 
 class JumpMonitor:
-    def __init__(self, output_path, translation_threshold, yaw_threshold_deg):
+    def __init__(
+        self,
+        output_path,
+        translation_threshold,
+        yaw_threshold_deg,
+        odom_yaw_rate_threshold_deg_s,
+    ):
         self.output_path = Path(output_path)
         self.jump_path = self.output_path.with_name("jumps.jsonl")
         self.output = self.output_path.open("a", encoding="utf-8", buffering=1)
         self.jumps = self.jump_path.open("a", encoding="utf-8", buffering=1)
         self.translation_threshold = translation_threshold
         self.yaw_threshold = math.radians(yaw_threshold_deg)
+        self.odom_yaw_rate_threshold = math.radians(odom_yaw_rate_threshold_deg_s)
         self.previous = {}
         self.last_logged = {}
         self.latest_scan = {}
@@ -92,6 +99,7 @@ class JumpMonitor:
             "monitor_start",
             translation_threshold_m=translation_threshold,
             yaw_threshold_deg=yaw_threshold_deg,
+            odom_yaw_rate_threshold_deg_s=odom_yaw_rate_threshold_deg_s,
         )
         rospy.Subscriber("/tf", TFMessage, self.tf_callback, queue_size=100)
         rospy.Subscriber(
@@ -184,15 +192,29 @@ class JumpMonitor:
         previous = self.previous.get(name)
         self.previous[name] = current
         if previous is None:
-            self.log_transform(name, current, 0.0, 0.0)
+            self.log_transform(name, current, 0.0, 0.0, 0.0)
             return
 
         distance = math.hypot(current[0] - previous[0], current[1] - previous[1])
         yaw_change = abs(angle_delta(current[2], previous[2]))
-        is_jump = distance > self.translation_threshold or yaw_change > self.yaw_threshold
+        elapsed = stamp - previous[3]
+        yaw_rate = yaw_change / elapsed if elapsed > 1e-6 else 0.0
+        if name == "odom_to_base_link":
+            # A fixed angle-per-message threshold flags ordinary continuous turns at
+            # low TF rates.  For odometry, require both a large angular step and an
+            # implausibly high angular rate; translation still uses the fixed step.
+            angular_jump = (
+                yaw_change > self.yaw_threshold
+                and yaw_rate > self.odom_yaw_rate_threshold
+            )
+            is_jump = distance > self.translation_threshold or angular_jump
+        else:
+            # map->odom is an AMCL correction, so any large single correction is
+            # diagnostically relevant even when it arrives over a longer interval.
+            is_jump = distance > self.translation_threshold or yaw_change > self.yaw_threshold
         log_period = 0.2 if name == "odom_to_base_link" else 0.0
         if is_jump or stamp - self.last_logged.get(name, -1e9) >= log_period:
-            self.log_transform(name, current, distance, yaw_change)
+            self.log_transform(name, current, distance, yaw_change, yaw_rate)
 
         if not is_jump:
             return
@@ -210,6 +232,7 @@ class JumpMonitor:
             "transform": name,
             "translation_jump_m": distance,
             "yaw_jump_deg": math.degrees(yaw_change),
+            "yaw_rate_deg_s": math.degrees(yaw_rate),
             "classification": classification,
             "current": {
                 "x": current[0],
@@ -229,7 +252,7 @@ class JumpMonitor:
             classification,
         )
 
-    def log_transform(self, name, current, distance, yaw_change):
+    def log_transform(self, name, current, distance, yaw_change, yaw_rate):
         self.last_logged[name] = current[3]
         self.write(
             name,
@@ -239,6 +262,7 @@ class JumpMonitor:
             yaw_deg=math.degrees(current[2]),
             delta_translation_m=distance,
             delta_yaw_deg=math.degrees(yaw_change),
+            yaw_rate_deg_s=math.degrees(yaw_rate),
         )
 
 
@@ -345,6 +369,8 @@ def start_recording(args):
         str(args.translation_threshold),
         "--yaw-threshold-deg",
         str(args.yaw_threshold_deg),
+        "--odom-yaw-rate-threshold-deg-s",
+        str(args.odom_yaw_rate_threshold_deg_s),
     ]
     monitor = subprocess.Popen(
         monitor_command,
@@ -446,7 +472,12 @@ def print_logs(args):
 
 def run_monitor(args):
     rospy.init_node("amcl_jump_monitor", anonymous=False)
-    JumpMonitor(args.events, args.translation_threshold, args.yaw_threshold_deg)
+    JumpMonitor(
+        args.events,
+        args.translation_threshold,
+        args.yaw_threshold_deg,
+        args.odom_yaw_rate_threshold_deg_s,
+    )
     rospy.loginfo("AMCL jump monitor recording to %s", args.events)
     rospy.spin()
 
@@ -461,6 +492,7 @@ def parser():
     result.add_argument("--events")
     result.add_argument("--translation-threshold", type=float, default=0.05)
     result.add_argument("--yaw-threshold-deg", type=float, default=2.0)
+    result.add_argument("--odom-yaw-rate-threshold-deg-s", type=float, default=180.0)
     result.add_argument("--lines", type=int, default=30)
     return result
 
