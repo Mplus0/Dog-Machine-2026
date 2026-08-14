@@ -182,6 +182,7 @@ catkin_install_python(PROGRAMS
   scripts/full_task.py
   scripts/camera_static_tf_from_yaml.py
   scripts/scan_ab_monitor.py
+  scripts/run_amcl_jump_diagnostic.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
