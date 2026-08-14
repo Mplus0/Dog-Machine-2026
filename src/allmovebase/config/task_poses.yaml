@@ -11,84 +11,84 @@ goals:
     - 0.376
   rec_pose_2:
     position:
-    - 3.723
-    - 5.411
+    - 0.5
+    - 4.5
     - 0.0
     orientation:
     - 0.0
     - 0.0
-    - -0.916
-    - 0.401
+    - 0.0
+    - 1.0
   rec_pose_3:
     position:
-    - 3.868
-    - 5.265
+    - 2.5
+    - 2.0
     - 0.0
     orientation:
     - 0.0
     - 0.0
-    - 0.338
-    - 0.941
+    - 1.0
+    - 0.0
   rec_pose_4:
     position:
-    - 3.292
-    - 2.731
+    - 2.5
+    - 4.5
     - 0.0
     orientation:
     - 0.0
     - 0.0
-    - 0.36
-    - 0.933
+    - 1.0
+    - 0.0
   pickup_pose:
     position:
-    - 2.675
-    - 4.871
+    - 0.0
+    - 0.0
     - 0.0
     orientation:
     - 0.0
     - 0.0
-    - -0.847
-    - 0.531
+    - 0.0
+    - 1.0
   place_pose_A:
     position:
-    - 3.222
-    - 6.985
+    - 0.0
+    - 0.0
     - 0.0
     orientation:
     - 0.0
     - 0.0
-    - 0.496
-    - 0.868
+    - 0.0
+    - 1.0
   place_pose_B:
     position:
-    - 3.648
-    - 6.695
+    - 0.0
+    - 0.0
     - 0.0
     orientation:
     - 0.0
     - 0.0
-    - 0.47
-    - 0.883
+    - 0.0
+    - 1.0
   place_pose_C:
     position:
-    - 4.085
-    - 6.426
+    - 0.0
+    - 0.0
     - 0.0
     orientation:
     - 0.0
     - 0.0
-    - 0.501
-    - 0.865
+    - 0.0
+    - 1.0
   place_pose_D:
     position:
-    - 4.531
-    - 4.525
+    - 0.0
+    - 0.0
     - 0.0
     orientation:
     - 0.0
     - 0.0
-    - 0.723
-    - 0.691
+    - 0.0
+    - 1.0
 waypoints:
   obs_start:
     position:
@@ -102,14 +102,14 @@ waypoints:
     - 0.011
   obs_end:
     position:
-    - 2.729
-    - 1.289
+    - 0.5
+    - 0.75
     - 0.0
     orientation:
     - 0.0
     - 0.0
-    - 0.098
-    - 0.995
+    - 1.0
+    - 0.0
 sequences:
   recognition:
   - rec_pose_1

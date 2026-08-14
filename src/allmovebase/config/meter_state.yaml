@@ -4,6 +4,5 @@ expected_regions:
 - B
 - C
 - D
-stamp: 1786385705.859808
-states:
-  B: low
+stamp: 1786701280.552517
+states: {}
