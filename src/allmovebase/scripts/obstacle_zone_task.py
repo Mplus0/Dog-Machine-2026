@@ -30,7 +30,7 @@ class ObstacleZoneTask(object):
         rospy.init_node("obstacle_zone_task", anonymous=False)
 
         self.frame_id = rospy.get_param("~frame_id", "map")
-        self.nav_timeout_sec = float(rospy.get_param("~nav_timeout", 35.0))
+        self.nav_timeout_sec = float(rospy.get_param("~nav_timeout", 60.0))
         self.task_budget_reserve_sec = float(rospy.get_param("~task_budget_reserve", 5.0))
         self.min_waypoint_remaining_sec = float(rospy.get_param("~min_waypoint_remaining", 10.0))
         self.budget = TaskBudget.from_params(default_enabled=False, default_total_sec=300.0)
@@ -398,4 +398,3 @@ if __name__ == "__main__":
         rospy.logerr(str(exc))
     except Exception as exc:
         rospy.logerr("obstacle_zone_task exception: %s", exc)
-

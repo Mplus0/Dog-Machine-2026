@@ -7,7 +7,7 @@
   <arg name="camera_depth_fps" default="15"/>
   <arg name="run_obstacle_task" default="true"/>
   <arg name="waypoint_order" default="obs_start,obs_end"/>
-  <arg name="nav_timeout" default="35.0"/>
+  <arg name="nav_timeout" default="60.0"/>
   <arg name="task_budget_enable" default="false"/>
   <arg name="task_budget_total" default="300.0"/>
   <arg name="task_budget_reserve" default="5.0"/>
@@ -37,8 +37,8 @@
   <arg name="amcl_map_yaml" default="$(find allmovebase)/map/map_amcl.yaml"/>
   <arg name="start_ground_filter_experimental" default="false"/>
   <arg name="navigation_scan_topic" default="/scan"/>
-  <arg name="costmap_inflation_radius" default="0.4"/>
-  <arg name="costmap_cost_scaling_factor" default="7.0"/>
+  <arg name="costmap_inflation_radius" default="0.35"/>
+  <arg name="costmap_cost_scaling_factor" default="8.0"/>
 
   <include file="$(find message_transformer)/launch/message_transformer.launch">
     <arg name="standing_basic_states" value="$(arg standing_basic_states)"/>

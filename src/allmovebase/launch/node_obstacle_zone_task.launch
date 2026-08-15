@@ -2,7 +2,7 @@
   <arg name="waypoints_yaml" default="$(find allmovebase)/config/task_poses.yaml"/>
   <arg name="waypoint_order" default="obstacle_test"/>
   <arg name="frame_id" default="map"/>
-  <arg name="nav_timeout" default="35.0"/>
+  <arg name="nav_timeout" default="60.0"/>
   <arg name="task_budget_enable" default="false"/>
   <arg name="task_budget_total" default="300.0"/>
   <arg name="task_budget_reserve" default="5.0"/>
