@@ -132,10 +132,46 @@ rosrun allmovebase run_amcl_jump_diagnostic.py start open_oldmap_slow
 rosrun allmovebase run_amcl_jump_diagnostic.py start fence_oldmap
 ```
 
+2026-08-15 的有效滤波重测结果为 `FAIL`：
+
+- `/scan_ground_filtered`、`/scan_ground_clearing` 和滤波诊断均正常录制。
+- `map→odom` 从约 `(5.217, 1.187, -179.7°)` 漂到
+  `(4.656, 1.003, 152.1°)`，累计约 0.59 m / 28°。
+- 共捕获 5 次 `AMCL_CANDIDATE` 修正，最大单次约 0.165 m / 12.26°。
+- `odom→base_link` 最大单步平移约 0.0041 m，转向连续。
+
+结论：物理围挡可被深度扫描稳定观察，但旧 AMCL 地图缺少围挡，新的 scan-map
+mismatch 足以阻止定位正确收敛。该结果支持进入 C 组，不支持修改 odom 或地面滤波。
+
 ### C：真实围挡 + 新 AMCL 地图
 
 只有确认围挡位置后才生成新地图。新地图应保留现有固定障碍，并只增加真实可观测
 围挡；不得复制导航图右侧约 1 m 宽的虚拟禁行区域。
+
+当前测试围挡与 6.0 m×6.0 m 场地对齐。右下开口两端分别与箱子 3 的右侧面和
+下侧面对齐，因此：
+
+- 下边界占用 `x=[0.00, 4.70) m`，`x=[4.70, 6.00] m` 开放。
+- 右边界占用 `y=[1.65, 6.00] m`，`y=[0.00, 1.65) m` 开放。
+- 上边界和左边界连续。
+- 三个箱子保持不变。旧图顶部 `2.05 m×0.55 m` 的粗块不对应第四个场内障碍，
+  在 v2 中替换为一格厚的连续上围挡。
+
+候选地图为 `map/map_amcl_fence_v2.yaml`，默认 `map_amcl.yaml` 尚未切换。启动 C 组：
+
+```bash
+roslaunch allmovebase task_2026_obstacle_test.launch \
+  run_obstacle_task:=false \
+  start_ground_filter_experimental:=true \
+  navigation_scan_topic:=/scan_ground_filtered \
+  amcl_map_yaml:=/home/ysc/comp2026_ws/src/allmovebase/map/map_amcl_fence_v2.yaml
+```
+
+验证 `/amcl_map` 已加载 v2；期望 `occupied=881`：
+
+```bash
+python3 -c 'import rospy; from nav_msgs.msg import OccupancyGrid; rospy.init_node("check_amcl_map",anonymous=True); m=rospy.wait_for_message("/amcl_map",OccupancyGrid,5); print("size=%dx%d resolution=%.2f occupied=%d"%(m.info.width,m.info.height,m.info.resolution,sum(v==100 for v in m.data)))'
+```
 
 ```bash
 rosrun allmovebase run_amcl_jump_diagnostic.py start fence_newmap

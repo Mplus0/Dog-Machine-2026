@@ -14,6 +14,14 @@ The navigation stack now uses two maps at the same time:
   - Current image: `arena_amcl_manual_1.pgm`.
   - Contains only physical obstacles that can be observed by depth/scan.
 
+- `map_amcl_fence_v2.yaml`
+  - Gate6 test map; it is not the default map.
+  - Preserves the three measured boxes from `arena_amcl_manual_1.pgm` and
+    replaces its legacy thick partial-top block with the measured physical fence.
+  - The lower boundary ends at x=4.70 m and the right boundary starts at
+    y=1.65 m, leaving the measured lower-right L-shaped opening.
+  - Generated reproducibly by `../tools/generate_amcl_fence_map.py`.
+
 Legacy/special map:
 
 - `map_avoidance.yaml`
@@ -26,4 +34,5 @@ PGM notes:
 - `arena_nav_manual_1.pgm`, `arena_nav_manual_2.pgm`, and
   `arena_nav_manual_3.pgm` are navigation/rule maps.
 - `arena_amcl_manual_1.pgm` is the localization map for AMCL.
+- `arena_amcl_fence_v2.pgm` is the Gate6 physical-fence AMCL candidate map.
 - All default competition maps use `resolution: 0.05` and `origin: [0, 0, 0]`.
