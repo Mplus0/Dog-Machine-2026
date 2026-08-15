@@ -35,8 +35,8 @@
   <arg name="camera_tf_yaml" default="$(find allmovebase)/config/camera2base_tf.yaml"/>
   <arg name="navigation_map_yaml" default="$(find allmovebase)/map/map.yaml"/>
   <arg name="amcl_map_yaml" default="$(find allmovebase)/map/map_amcl.yaml"/>
-  <arg name="start_ground_filter_experimental" default="false"/>
-  <arg name="navigation_scan_topic" default="/scan"/>
+  <arg name="start_ground_filter_experimental" default="true"/>
+  <arg name="navigation_scan_topic" default="/scan_ground_filtered"/>
   <arg name="costmap_inflation_radius" default="0.35"/>
   <arg name="costmap_cost_scaling_factor" default="8.0"/>
 

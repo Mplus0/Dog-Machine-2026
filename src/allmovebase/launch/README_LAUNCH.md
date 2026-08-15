@@ -18,6 +18,10 @@ YOLO 推理只通过 Docker 镜像 `yolo11` 运行。D435i 只允许一个 `real
 - 启动导航栈：相机、TF、里程计、depth2laser、map server、AMCL、move_base
 - 启动 `node_obstacle_zone_task.launch`
 - 默认只开深度流，适合低负载避障调试
+- Gate 0–7 验收通过后默认启用重力滤波，AMCL、Costmap 和任务监视使用
+  `/scan_ground_filtered`，Costmap 使用 `/scan_ground_clearing` 执行有限距离清除
+- obstacle test 默认使用 `0.35 m` 膨胀半径、`8.0` 成本衰减系数和 `60 s` 单点超时；
+  这些默认值不扩散到 navigation、pick-place 和 full task
 
 ```bash
 roslaunch allmovebase task_2026_obstacle_test.launch
@@ -342,4 +346,3 @@ comp2026_ws/src/allmovebase/config/camera2base_tf.yaml
 ```
 
 `camera2base_tf.launch` 会启动 `camera_static_tf_from_yaml.py`，读取 `camera_to_base_link_transform` 并发布 `base_link -> camera_link`。实机调整相机位姿时，直接改 `translation` 和 `rotation` 即可，不需要再改 launch。
-
