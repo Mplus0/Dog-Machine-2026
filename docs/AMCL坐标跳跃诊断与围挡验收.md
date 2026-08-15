@@ -15,8 +15,9 @@
 - 配置文件写了 `do_beamskipping: true`，但 Noetic AMCL 实际参数名是
   `do_beamskip`；运行时 `do_beamskip=false`。A 组完成前不修改此参数。
 
-Gate6 保持 `PAUSED`。在捕获跳跃瞬间之前，不修改重力滤波参数，不用导航图直接
-替换 AMCL 图，也不把虚拟边界画入 AMCL 图。
+Gate6 初始诊断阶段保持 `PAUSED`；截至本文末尾，已在当前测试围挡场地达到
+`PASS_CURRENT_TEST_FIELD`。全过程未修改重力滤波参数，未用导航图直接替换
+AMCL 图，也未把虚拟边界画入 AMCL 图。
 
 ### A1 开放场地记录结论（2026-08-15）
 
@@ -177,6 +178,29 @@ python3 -c 'import rospy; from nav_msgs.msg import OccupancyGrid; rospy.init_nod
 rosrun allmovebase run_amcl_jump_diagnostic.py start fence_newmap
 ```
 
+### C 组结果（2026-08-15）
+
+`arena_amcl_fence_v2.pgm` 在当前测试围挡场地通过三轮完整动态旋转。C1 实测只旋转
+204.5°，作为补充记录，不计入三轮完整验收。
+
+| 记录 | odom 实测转角 | jump 数 | `map→odom` 最大单步 | 整圈平滑净修正 |
+|---|---:|---:|---:|---:|
+| C2 retry | 389.5° | 0 | 0.049 m / 0.41° | 0.157 m / 1.58° |
+| C3 | 411.6° | 0 | 0.033 m / 0.86° | 0.015 m / 2.99° |
+| C4 | 460.7° | 0 | 0.022 m / 0.47° | 0.050 m / 3.00° |
+
+C4 的 `/scan_ground_filtered` 平均 14.998 Hz，有限点数为 107–600（中位数
+595），103 条地面滤波诊断全部为 level 0。三轮中 odom 连续、AMCL 协方差保持低位，
+RViz 均未观察到坐标跳跃。
+
+Gate6 在“当前 6 m×6 m 测试围挡 + 右下 L 形开口 + AMCL v2”条件下判定为
+`PASS_CURRENT_TEST_FIELD`。B 组旧地图失败、C 组匹配地图通过，因果证据支持根因为
+物理环境与 AMCL 地图不一致；不需要修改重力滤波、odom/EKF 或 `do_beamskip`。
+
+该结论不自动授权把 v2 设为正式默认地图。正式场地仍需核对围挡内尺寸和开口坐标，
+并完成带平移的任务路线及返回点实测；几何一致且路线验收通过后再切换
+`map_amcl.yaml`。
+
 ## 新 AMCL 地图生成前必须确认
 
 - 围挡内侧的实际长宽（不要默认一定是 6.0 m×6.0 m）。
@@ -190,7 +214,7 @@ rosrun allmovebase run_amcl_jump_diagnostic.py start fence_newmap
 
 ## Gate6 判定
 
-每一配置至少重复三轮。通过要求：
+失败基线捕获到可复现证据后可以停止；候选修复配置至少重复三轮。通过要求：
 
 - `/scan_ground_filtered` 持续不低于 10 Hz，扫描几何无翻转或地面扇形。
 - `odom→base_link` 连续，无单次异常跳跃。
