@@ -63,6 +63,7 @@
     <include file="$(find allmovebase)/launch/node_obstacle_zone_task.launch">
       <arg name="waypoint_order" value="$(arg waypoint_order)"/>
       <arg name="nav_timeout" value="$(arg nav_timeout)"/>
+      <arg name="scan_topic" value="$(arg navigation_scan_topic)"/>
       <arg name="task_budget_enable" value="$(arg task_budget_enable)"/>
       <arg name="task_budget_total" value="$(arg task_budget_total)"/>
       <arg name="task_budget_reserve" value="$(arg task_budget_reserve)"/>
