@@ -9,6 +9,8 @@
   -->
   <arg name="use_separate_clearing_scan" default="false"/>
   <arg name="clearing_scan_topic" default="/scan_ground_clearing"/>
+  <arg name="costmap_inflation_radius" default="0.4"/>
+  <arg name="costmap_cost_scaling_factor" default="7.0"/>
   <node pkg="move_base" type="move_base" respawn="false" name="move_base" output="screen" >
    <param name="base_global_planner" value="navfn/NavfnROS"/>
    <rosparam file="$(find allmovebase)/config/navfn_planner_params.yaml" command="load"/>
@@ -19,6 +21,17 @@
     <rosparam file="$(find allmovebase)/config/local_costmap_params.yaml" command="load" />
     <rosparam file="$(find allmovebase)/config/common_costmap_params.yaml" command="load" ns="global_costmap" />
     <rosparam file="$(find allmovebase)/config/common_costmap_params.yaml" command="load" ns="local_costmap" />
+
+    <!-- Launch-time overrides allow conservative inflation A/B tests without
+         changing the shared costmap defaults for every navigation entrypoint. -->
+    <param name="global_costmap/inflation_layer/inflation_radius"
+           value="$(arg costmap_inflation_radius)"/>
+    <param name="local_costmap/inflation_layer/inflation_radius"
+           value="$(arg costmap_inflation_radius)"/>
+    <param name="global_costmap/inflation_layer/cost_scaling_factor"
+           value="$(arg costmap_cost_scaling_factor)"/>
+    <param name="local_costmap/inflation_layer/cost_scaling_factor"
+           value="$(arg costmap_cost_scaling_factor)"/>
 
     <!-- Explicit topics keep marking and clearing inputs independent. -->
     <param name="global_costmap/obstacle_layer/laser_scan_sensor/topic" value="$(arg scan_topic)"/>

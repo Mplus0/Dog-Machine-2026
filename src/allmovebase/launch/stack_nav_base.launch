@@ -10,6 +10,8 @@
   <arg name="amcl_map_yaml" default="$(find allmovebase)/map/map_amcl.yaml"/>
   <arg name="start_ground_filter_experimental" default="false"/>
   <arg name="navigation_scan_topic" default="/scan"/>
+  <arg name="costmap_inflation_radius" default="0.4"/>
+  <arg name="costmap_cost_scaling_factor" default="7.0"/>
 
   <group if="$(arg start_camera)">
     <include file="$(find allmovebase)/launch/camera.launch">
@@ -39,5 +41,7 @@
     <arg name="scan_topic" value="$(arg navigation_scan_topic)"/>
     <arg name="use_separate_clearing_scan" value="$(arg start_ground_filter_experimental)"/>
     <arg name="clearing_scan_topic" value="/scan_ground_clearing"/>
+    <arg name="costmap_inflation_radius" value="$(arg costmap_inflation_radius)"/>
+    <arg name="costmap_cost_scaling_factor" value="$(arg costmap_cost_scaling_factor)"/>
   </include>
 </launch>

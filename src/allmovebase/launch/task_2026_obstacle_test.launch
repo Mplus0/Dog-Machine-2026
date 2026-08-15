@@ -37,6 +37,8 @@
   <arg name="amcl_map_yaml" default="$(find allmovebase)/map/map_amcl.yaml"/>
   <arg name="start_ground_filter_experimental" default="false"/>
   <arg name="navigation_scan_topic" default="/scan"/>
+  <arg name="costmap_inflation_radius" default="0.4"/>
+  <arg name="costmap_cost_scaling_factor" default="7.0"/>
 
   <include file="$(find message_transformer)/launch/message_transformer.launch">
     <arg name="standing_basic_states" value="$(arg standing_basic_states)"/>
@@ -57,6 +59,8 @@
     <arg name="amcl_map_yaml" value="$(arg amcl_map_yaml)"/>
     <arg name="start_ground_filter_experimental" value="$(arg start_ground_filter_experimental)"/>
     <arg name="navigation_scan_topic" value="$(arg navigation_scan_topic)"/>
+    <arg name="costmap_inflation_radius" value="$(arg costmap_inflation_radius)"/>
+    <arg name="costmap_cost_scaling_factor" value="$(arg costmap_cost_scaling_factor)"/>
   </include>
 
   <group if="$(arg run_obstacle_task)">
