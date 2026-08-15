@@ -42,7 +42,7 @@ goals:
   pickup_pose:
     position:
     - 4.217
-    - 2.633
+    - 2.8
     - 0.0
     orientation:
     - 0.0
@@ -52,7 +52,7 @@ goals:
   place_pose_A:
     position:
     - 3.293
-    - 5.347
+    - 4.95
     - 0.0
     orientation:
     - 0.0
@@ -62,7 +62,7 @@ goals:
   place_pose_B:
     position:
     - 3.749
-    - 5.448
+    - 4.95
     - 0.0
     orientation:
     - 0.0
@@ -72,7 +72,7 @@ goals:
   place_pose_C:
     position:
     - 4.153
-    - 5.413
+    - 4.95
     - 0.0
     orientation:
     - 0.0
@@ -81,8 +81,8 @@ goals:
     - 0.712
   place_pose_D:
     position:
-    - 4.735
-    - 5.422
+    - 4.5
+    - 4.95
     - 0.0
     orientation:
     - 0.0
