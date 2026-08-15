@@ -158,7 +158,9 @@ mismatch 足以阻止定位正确收敛。该结果支持进入 C 组，不支�
 - 三个箱子保持不变。旧图顶部 `2.05 m×0.55 m` 的粗块不对应第四个场内障碍，
   在 v2 中替换为一格厚的连续上围挡。
 
-候选地图为 `map/map_amcl_fence_v2.yaml`，默认 `map_amcl.yaml` 尚未切换。启动 C 组：
+候选地图为 `map/map_amcl_fence_v2.yaml`。完成当前场地三轮验收后，默认
+`map_amcl.yaml` 已切换到同一 `arena_amcl_fence_v2.pgm`。以下显式参数仍可用于复现
+C 组测试：
 
 ```bash
 roslaunch allmovebase task_2026_obstacle_test.launch \
@@ -197,9 +199,9 @@ Gate6 在“当前 6 m×6 m 测试围挡 + 右下 L 形开口 + AMCL v2”条件
 `PASS_CURRENT_TEST_FIELD`。B 组旧地图失败、C 组匹配地图通过，因果证据支持根因为
 物理环境与 AMCL 地图不一致；不需要修改重力滤波、odom/EKF 或 `do_beamskip`。
 
-该结论不自动授权把 v2 设为正式默认地图。正式场地仍需核对围挡内尺寸和开口坐标，
-并完成带平移的任务路线及返回点实测；几何一致且路线验收通过后再切换
-`map_amcl.yaml`。
+v2 已按用户确认设为当前测试环境的默认 AMCL 地图。正式场地仍需核对围挡内尺寸和
+开口坐标；若几何不一致，应先生成现场版本或将 `map_amcl.yaml` 回退到
+`arena_amcl_manual_1.pgm`，不得把当前测试结论直接外推到不同几何的现场。
 
 ## 新 AMCL 地图生成前必须确认
 
