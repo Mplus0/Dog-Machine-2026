@@ -1,11 +1,22 @@
 <launch>
-  <!-- ROS1 side adapter for ROS2 arm protocol over ros1_bridge. -->
+  <!-- ROS1 protocol adapter plus full-duplex TCP transport to the ROS2 arm. -->
   <arg name="task_cmd_topic" default="/dog_arm/task_cmd"/>
   <arg name="task_result_topic" default="/dog_arm/task_result"/>
   <arg name="base_adjust_req_topic" default="/dog_arm/base_adjust_req"/>
   <arg name="local_task_cmd_topic" default="/dog_arm/local_task_cmd"/>
   <arg name="task_result_event_topic" default="/dog_arm/task_result_event"/>
   <arg name="base_adjust_event_topic" default="/dog_arm/base_adjust_event"/>
+  <arg name="transport_connected_topic" default="/dog_arm/transport_connected"/>
+  <arg name="transport_status_topic" default="/dog_arm/transport_status"/>
+
+  <arg name="start_tcp_transport" default="true"/>
+  <arg name="arm_server_host" default="192.168.31.56"/>
+  <arg name="arm_server_port" default="47001"/>
+  <arg name="tcp_connect_timeout" default="3.0"/>
+  <arg name="tcp_heartbeat_interval" default="1.0"/>
+  <arg name="tcp_heartbeat_timeout" default="5.0"/>
+  <arg name="tcp_outbound_ttl" default="15.0"/>
+  <arg name="tcp_shared_secret_file" default="$(env HOME)/.ros/dog_arm_shared_secret"/>
 
   <arg name="enable_base_adjust_execution" default="false"/>
   <arg name="base_adjust_mode" default="cmd_vel"/>
@@ -33,4 +44,25 @@
     <param name="base_adjust_max_step_m" value="$(arg base_adjust_max_step_m)"/>
     <param name="base_adjust_stop_sec" value="$(arg base_adjust_stop_sec)"/>
   </node>
+
+  <group if="$(arg start_tcp_transport)">
+    <node pkg="dog_arm_bridge"
+          type="dog_arm_tcp_client_node.py"
+          name="dog_arm_tcp_client"
+          output="screen"
+          required="true">
+      <param name="server_host" value="$(arg arm_server_host)"/>
+      <param name="server_port" value="$(arg arm_server_port)"/>
+      <param name="connect_timeout" value="$(arg tcp_connect_timeout)"/>
+      <param name="heartbeat_interval" value="$(arg tcp_heartbeat_interval)"/>
+      <param name="heartbeat_timeout" value="$(arg tcp_heartbeat_timeout)"/>
+      <param name="outbound_ttl" value="$(arg tcp_outbound_ttl)"/>
+      <param name="shared_secret_file" value="$(arg tcp_shared_secret_file)"/>
+      <param name="task_cmd_topic" value="$(arg task_cmd_topic)"/>
+      <param name="task_result_topic" value="$(arg task_result_topic)"/>
+      <param name="base_adjust_req_topic" value="$(arg base_adjust_req_topic)"/>
+      <param name="connected_topic" value="$(arg transport_connected_topic)"/>
+      <param name="status_topic" value="$(arg transport_status_topic)"/>
+    </node>
+  </group>
 </launch>

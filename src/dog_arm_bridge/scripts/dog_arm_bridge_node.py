@@ -149,24 +149,32 @@ class DogArmBridgeNode(object):
             step_m = self.base_adjust_max_step_m
             data["step_m"] = step_m
 
-        payload = self._encode_json(data)
-        rospy.loginfo("arm -> dog base_adjust_req: %s", payload)
-        self.base_adjust_event_pub.publish(String(data=payload))
-
         if not self.enable_base_adjust_execution:
             rospy.loginfo("base adjust execution disabled; request recorded only")
+            data["executed"] = False
+            data["status"] = "execution_disabled"
+            self._publish_base_adjust_event(data)
             return
+        executed = False
         if self.base_adjust_mode == "cmd_vel":
-            self._execute_cmd_vel_adjust(direction, step_m)
+            executed = self._execute_cmd_vel_adjust(direction, step_m)
         elif self.base_adjust_mode == "lite3_motion_cmd":
-            self._execute_lite3_motion_cmd_adjust(direction, step_m)
+            executed = self._execute_lite3_motion_cmd_adjust(direction, step_m)
         else:
             rospy.logwarn("unknown base_adjust_mode=%s; request not executed", self.base_adjust_mode)
+        data["executed"] = bool(executed)
+        data["status"] = "completed" if executed else "execution_failed"
+        self._publish_base_adjust_event(data)
+
+    def _publish_base_adjust_event(self, data):
+        payload = self._encode_json(data)
+        rospy.loginfo("arm -> dog base_adjust_event: %s", payload)
+        self.base_adjust_event_pub.publish(String(data=payload))
 
     def _execute_cmd_vel_adjust(self, direction, step_m):
         if self.base_adjust_speed_mps <= 0.0:
             rospy.logwarn("base_adjust_speed_mps must be positive")
-            return
+            return False
         duration = step_m / self.base_adjust_speed_mps
         twist = Twist()
         if direction == "left":
@@ -181,11 +189,13 @@ class DogArmBridgeNode(object):
             self.cmd_vel_pub.publish(twist)
             rate.sleep()
         self._publish_zero_cmd_vel(self.base_adjust_stop_sec)
+        return True
 
     def _execute_lite3_motion_cmd_adjust(self, direction, step_m):
         command = "side 10000" if direction == "left" else "side -10000"
         rospy.logwarn("publishing experimental lite3 motion command for base adjust: %s", command)
         self.motion_cmd_pub.publish(String(data=command))
+        return True
 
     def _publish_zero_cmd_vel(self, duration):
         zero = Twist()

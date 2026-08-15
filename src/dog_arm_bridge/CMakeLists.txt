@@ -13,6 +13,7 @@ catkin_package(
 
 catkin_install_python(PROGRAMS
   scripts/dog_arm_bridge_node.py
+  scripts/dog_arm_tcp_client_node.py
   scripts/dog_arm_task_cli.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )

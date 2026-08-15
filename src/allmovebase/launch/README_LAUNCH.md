@@ -290,7 +290,10 @@ comp2026_ws/src/allmovebase/config/task_poses.yaml
 - 底盘微调请求：`/dog_arm/base_adjust_req`
 - 抓取命令：`pick`
 - 放置命令：`place_to_zone`
-- `arm_command_required`：默认 `false`，表示没有机械臂订阅者时也继续发布并等待结果；两端联调稳定后建议改为 `true`。
+- `arm_command_required`：默认 `true`，正式任务必须检测到本地 TCP 客户端订阅者和已认证的远端机械臂连接。
+- `arm_server_host`：默认 `192.168.31.56`；机械臂 TCP 服务端地址。
+- `arm_server_port`：默认 `47001`。
+- 无机械臂回归测试时显式传入 `start_arm_tcp_transport:=false arm_command_required:=false arm_require_transport_connected:=false`。
 - `pick_failed + need_base_adjust` 会等待 `/dog_arm/base_adjust_event` 后重试一次抓取；底盘实际微调默认关闭。
 
 常用调参：

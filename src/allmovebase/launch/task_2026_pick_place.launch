@@ -25,6 +25,9 @@
   <arg name="start_ground_filter_experimental" default="false"/>
   <arg name="navigation_scan_topic" default="/scan"/>
   <arg name="start_dog_arm_bridge" default="true"/>
+  <arg name="start_arm_tcp_transport" default="true"/>
+  <arg name="arm_server_host" default="192.168.31.56"/>
+  <arg name="arm_server_port" default="47001"/>
   <arg name="enable_arm_base_adjust_execution" default="false"/>
 
   <arg name="goals_yaml" default="$(find allmovebase)/config/task_poses.yaml"/>
@@ -35,14 +38,17 @@
   <arg name="arm_cmd_topic" default="/dog_arm/task_cmd"/>
   <arg name="arm_result_topic" default="/dog_arm/task_result"/>
   <arg name="arm_base_adjust_event_topic" default="/dog_arm/base_adjust_event"/>
+  <arg name="arm_transport_connected_topic" default="/dog_arm/transport_connected"/>
   <arg name="arm_pick_command" default="pick"/>
   <arg name="arm_place_command" default="place_to_zone"/>
   <arg name="arm_wait" default="120.0"/>
   <arg name="arm_pick_timeout" default="180.0"/>
   <arg name="arm_place_timeout" default="60.0"/>
   <arg name="arm_base_adjust_settle" default="1.0"/>
+  <arg name="arm_base_adjust_event_timeout" default="5.0"/>
   <arg name="arm_max_pick_adjust_retries" default="1"/>
-  <arg name="arm_command_required" default="false"/>
+  <arg name="arm_command_required" default="true"/>
+  <arg name="arm_require_transport_connected" default="true"/>
 
   <include file="$(find message_transformer)/launch/message_transformer.launch">
     <arg name="standing_basic_states" value="$(arg standing_basic_states)"/>
@@ -69,6 +75,9 @@
   <group if="$(arg start_dog_arm_bridge)">
     <include file="$(find dog_arm_bridge)/launch/dog_arm_bridge.launch">
       <arg name="enable_base_adjust_execution" value="$(arg enable_arm_base_adjust_execution)"/>
+      <arg name="start_tcp_transport" value="$(arg start_arm_tcp_transport)"/>
+      <arg name="arm_server_host" value="$(arg arm_server_host)"/>
+      <arg name="arm_server_port" value="$(arg arm_server_port)"/>
     </include>
   </group>
 
@@ -89,13 +98,16 @@
     <param name="arm_cmd_topic" value="$(arg arm_cmd_topic)"/>
     <param name="arm_result_topic" value="$(arg arm_result_topic)"/>
     <param name="arm_base_adjust_event_topic" value="$(arg arm_base_adjust_event_topic)"/>
+    <param name="arm_transport_connected_topic" value="$(arg arm_transport_connected_topic)"/>
     <param name="arm_pick_command" value="$(arg arm_pick_command)"/>
     <param name="arm_place_command" value="$(arg arm_place_command)"/>
     <param name="arm_wait" value="$(arg arm_wait)"/>
     <param name="arm_pick_timeout" value="$(arg arm_pick_timeout)"/>
     <param name="arm_place_timeout" value="$(arg arm_place_timeout)"/>
     <param name="arm_base_adjust_settle" value="$(arg arm_base_adjust_settle)"/>
+    <param name="arm_base_adjust_event_timeout" value="$(arg arm_base_adjust_event_timeout)"/>
     <param name="arm_max_pick_adjust_retries" value="$(arg arm_max_pick_adjust_retries)"/>
     <param name="arm_command_required" value="$(arg arm_command_required)"/>
+    <param name="arm_require_transport_connected" value="$(arg arm_require_transport_connected)"/>
   </node>
 </launch>

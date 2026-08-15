@@ -42,13 +42,16 @@ class PickPlaceTask:
         self.arm_cmd_topic = rospy.get_param("~arm_cmd_topic", "/dog_arm/task_cmd")
         self.arm_result_topic = rospy.get_param("~arm_result_topic", "/dog_arm/task_result")
         self.arm_base_adjust_event_topic = rospy.get_param("~arm_base_adjust_event_topic", "/dog_arm/base_adjust_event")
+        self.arm_transport_connected_topic = rospy.get_param("~arm_transport_connected_topic", "/dog_arm/transport_connected")
         self.arm_pick_command = rospy.get_param("~arm_pick_command", "pick")
         self.arm_place_command_template = rospy.get_param("~arm_place_command", "place_to_zone")
         self.arm_wait_sec = float(rospy.get_param("~arm_wait", 120.0))
         self.arm_command_required = self._param_bool("~arm_command_required", False)
+        self.arm_require_transport_connected = self._param_bool("~arm_require_transport_connected", True)
         self.arm_pick_timeout_sec = float(rospy.get_param("~arm_pick_timeout", 180.0))
         self.arm_place_timeout_sec = float(rospy.get_param("~arm_place_timeout", 60.0))
         self.arm_base_adjust_settle_sec = float(rospy.get_param("~arm_base_adjust_settle", 1.0))
+        self.arm_base_adjust_event_timeout_sec = float(rospy.get_param("~arm_base_adjust_event_timeout", 5.0))
         self.arm_max_pick_adjust_retries = int(rospy.get_param("~arm_max_pick_adjust_retries", 1))
         self.report_topic = rospy.get_param("~report_topic", "/pick_place_report")
 
@@ -59,7 +62,10 @@ class PickPlaceTask:
             task_cmd_topic=self.arm_cmd_topic,
             task_result_topic=self.arm_result_topic,
             base_adjust_event_topic=self.arm_base_adjust_event_topic,
+            transport_connected_topic=self.arm_transport_connected_topic,
             wait_for_connection_timeout=self.motion_cmd_wait_timeout_sec,
+            require_transport_connected=self.arm_require_transport_connected,
+            base_adjust_event_timeout=self.arm_base_adjust_event_timeout_sec,
             base_adjust_settle_sec=self.arm_base_adjust_settle_sec,
             max_pick_adjust_retries=self.arm_max_pick_adjust_retries,
             report=self._report,
