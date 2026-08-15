@@ -202,6 +202,8 @@ Gate6 在“当前 6 m×6 m 测试围挡 + 右下 L 形开口 + AMCL v2”条件
 v2 已按用户确认设为当前测试环境的默认 AMCL 地图。正式场地仍需核对围挡内尺寸和
 开口坐标；若几何不一致，应先生成现场版本或将 `map_amcl.yaml` 回退到
 `arena_amcl_manual_1.pgm`，不得把当前测试结论直接外推到不同几何的现场。
+无需编辑文件即可临时回退：启动时将 `amcl_map_yaml` 指向
+`/home/ysc/comp2026_ws/src/allmovebase/map/map_amcl_pre_fence.yaml`。
 
 ## 新 AMCL 地图生成前必须确认
 

@@ -26,6 +26,11 @@ The navigation stack now uses two maps at the same time:
 
 Legacy/special map:
 
+- `map_amcl_pre_fence.yaml`
+  - Explicit rollback YAML for `arena_amcl_manual_1.pgm`.
+  - Use only when testing without the physical fence or when the formal field
+    geometry does not match the current v2 map.
+
 - `map_avoidance.yaml`
   - Current image: `arena_avoidance_manual_1.pgm`.
   - Kept for small obstacle-zone experiments; it is no longer the default map
